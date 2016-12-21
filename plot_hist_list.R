@@ -1,20 +1,19 @@
 # Example of usage
-# Create list of all your tables you want to plot
-df_list <-
-  list(df_cv,
-       df_cv_sum,
-       df_NA_cv,
-       df_NA_cv_sum) %>%
-  setNames(c("df_cv",
-             "df_cv_sum",
-             "df_NA_cv",
-             "df_NA_cv_sum"))
 
 # Plot the fucking histograms
-plot_list_hist(df_list, "CV.pdf")
+plot_list_hist_cv(file = "CV.pdf", df, df_NA)
 
 # Function to plot CV histograms to pdf file
-plot_list_hist <- function(df_list, file = "CV_report.pdf") {
+plot_list_hist_cv <- function(..., file = "CV_report.pdf") {
+  df_names <- as.character(substitute(...()))
+  df_list <- c(sapply(list(...), function(df) list(peakCV(df), annCV(df))))
+  names(df_list) <- c(sapply(df_names,
+                             paste0, c("_cv", "_cv_sum")))
+  plot_list_hist(df_list, file)
+}
+
+# Function to plot histograms of several data frames' columns to pdf file
+plot_list_hist <- function(df_list, file) {
 
   # Get the number of columns in dataframes
   n <- unique(sapply(df_list, ncol))
