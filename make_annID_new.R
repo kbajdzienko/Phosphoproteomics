@@ -8,6 +8,7 @@ make_annID <- function(df, mascot_file) {
   # from mascot output file
   mascot <- 
     read.csv(mascot_file,
+             skip = 71,
              header = T, sep = ",",
              stringsAsFactors = F,
              colClasses = "character") %>%
