@@ -2,20 +2,20 @@ library(plyr)
 library(dplyr)
 library(tidyr)
 
-make_annID <- function(df, mascot_file) {
+make_annID <- function(df, mascot_file, skip = 71) {
   
   # Remove everything but Sequence, Accession, start and end position
   # and number of missed cleaveges from mascot output file
   mascot <- 
     read.csv(mascot_file,
-             skip = 71,
+             skip = skip,
              header = T, sep = ",",
              stringsAsFactors = F,
              colClasses = "character") %>%
     tbl_df() %>%
     select(prot_acc, pep_seq, pep_start, pep_end, pep_miss) %>%
     mutate_each(funs(as.integer), pep_start, pep_end, pep_miss) %>%
-    rename(c("Accession" = "prot_acc", "Sequence = pep_seq")) %>%
+    rename(Accession = prot_acc, Sequence = pep_seq) %>%
     distinct()
     
   # Merge original annotation data table with mascot

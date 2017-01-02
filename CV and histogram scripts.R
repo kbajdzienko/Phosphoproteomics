@@ -7,51 +7,9 @@
 
 
 
-zero.to.na <- function(x) {
-  x[x==0] <- NA
-  return(x)
-}
-
-#Calculate coeficient of variation within replicates of each group
-cv <- function(df) {
-  df_cv <- 
-    df$intData %>%
-    mutate(intensity = zero.to.na(intensity)) %>%
-    left_join(df$sampleData) %>%
-    group_by(peak_ID, group) %>%
-    summarize(CV = sd(intensity, na.rm = T)/mean(intensity, na.rm = T)) %>%
-    spread(group, CV) %>%
-    left_join(select(df$peakData, peak_ID, Score))
-  return(df_cv)
-}
-
-cv(df)
-
-#Sum intensities of duplicate phos site entries in each sample
-
-cv_sum <- function(df) {
-  df_cv_sum2 <-  
-    df$intData %>%
-    left_join(select(df$peakData, peak_ID, ann_ID)) %>%
-    group_by(ann_ID, sample_ID) %>%
-    summarize_at(vars(intensity), sum, na.rm = T) %>%
-    mutate(intensity = zero.to.na(intensity)) %>%
-    left_join(df$sampleData) %>%
-    group_by(ann_ID, group) %>%
-    summarize(CV = sd(intensity, na.rm = T)/mean(intensity, na.rm = T)) %>%
-    spread(group, CV)
-  return(df_cv_sum2)
-}
 
 #Plot frequency distribution of CV for each group  
-
-
-for (i in 2:7) {
-  hist(df_cv_sum[[i]],
-       xlim = c(0, 2.5),
-       breaks = seq(0, 2.5, length.out = 20),
-       main = paste0(gsub("\\W", "_", names(df_cv)[i])))
-}
+#and save as png file in the working directory
 
 plot_cv <- function(df) {
   df_cv <- cv(df)
@@ -86,4 +44,9 @@ df_sum <-
   summarize_at(vars(intensity), sum) %>%
   spread(sample_ID, intensity)
 
-
+df_NA_score24 <- filter_NA(df, threshold = 0.2)
+df_NA_score24 <- filter_score(df_NA_score24, score_threshold = 24)
+df_NA_score5 <- filter_NA(df, threshold = 0.2)
+df_NA_score5 <- filter_score(df_NA_score5, score_threshold = 5)
+df_NA <- filter_NA(df, threshold = 0.2)
+df_score24 <- filter_score(df, score_threshold = 24)
