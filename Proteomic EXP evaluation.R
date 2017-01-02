@@ -1,9 +1,10 @@
 #Function to return number of unique prot IDs per LC run
-pep_per_run <- function(mascot_file) {
+
+pep_per_run <- function(mascot_file, skip = 71, name_end = 10) {
   df <- 
-    read.csv(mascot_file, skip = 71, header = T, sep = ",",stringsAsFactors = F) %>%
+    read.csv(mascot_file, skip = skip, header = T, sep = ",",stringsAsFactors = F) %>%
     select(prot_acc, pep_scan_title) %>%
-    mutate(pep_scan_title = substr(pep_scan_title, 1, 10)) %>%  #would be good to be able to 
+    mutate(pep_scan_title = substr(pep_scan_title, 1, name_end)) %>%  #would be good to be able to 
     distinct() %>%
     group_by(pep_scan_title) %>%
     tally() %>%
