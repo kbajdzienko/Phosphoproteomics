@@ -84,10 +84,10 @@ tidy_PQI <- function(file, abundance = "Raw") {
     slice(-(1:3)) %>%
     distinct() %>%
     mutate(peak_ID = rename_dupl(.$peak_ID)) %>%
-    arrange(peak_ID) %>%
     gather("sample_ID", "intensity", -peak_ID) %>%
     mutate_at(vars(intensity), as.numeric) %>%
     mutate_at(vars(intensity), zero.to.na) %>%
+    arrange(peak_ID)
 
   # Peak information table
   peakData <-
@@ -97,9 +97,8 @@ tidy_PQI <- function(file, abundance = "Raw") {
     slice(-(1:3)) %>%
     distinct() %>%
     mutate(peak_ID = rename_dupl(.$peak_ID)) %>%
-    mutate_each(funs(as.numeric), RT, Neutral_mass) %>%
-    mutate_each(funs(as.numeric), Score) %>%
-    arrange(RT)
+    mutate_at(vars(RT, Neutral_mass, Score), as.numeric) %>%
+    arrange(peak_ID)
 
   return(list(sampleData = sampleData,
               peakData = peakData,
