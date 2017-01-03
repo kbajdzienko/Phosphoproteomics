@@ -4,9 +4,7 @@
 #
 # 2)
 # Table with median_CV for each sample_group in the experiment
-#
 # And plots:
-# Histograms: Missed cleavages, Phos peptide score distribution, Peptides per protein
 # Abundance plots IN msstats: box plot on page 14 and profile plots on page 15
 # I think those profile plots are quite informative (and colorful).
 
@@ -60,6 +58,17 @@ pep.phos.ratio <-
   summarize(nonphos_to_phos = n[!Phosph]/n[Phosph])
 
 
+
+
+# Histograms: Missed cleavages, Phos peptide score distribution, Peptides per protein
+barplot(table(mascot$pep_miss))
+hist(mascot$pep_score)
+
+pep.per.prot <-
+  mascot %>%
+  distinct(prot_acc, pep_seq) %>%
+  count(prot_acc)
+hist(pep.per.prot$n, breaks = 20)
 
 #Plot histograms of coeficients of variation in each replicate group in EXP
 #Requires peptide tables to be processed by tidy_PQI function
