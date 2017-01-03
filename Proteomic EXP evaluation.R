@@ -26,10 +26,11 @@ prot.phos.num <-
   distinct() %>%
   count()
 
-# Identified proteins CV (pep_per_run function in Proteomic_EXP_evaluation.R)
+# Identified unique proteins within each run -- CV
 prot.per.run.cv <-
   mascot %>%
   mutate(sample_ID = sapply(strsplit(pep_scan_title, "\\."), '[', 1)) %>%
+  distinct(sample_ID, prot_acc) %>%
   count(sample_ID) %>%
   summarize(cv = sd(n)/mean(n))
 
@@ -57,22 +58,6 @@ pep.phos.ratio <-
   distinct(pep_seq, pep_var_mod) %>%
   count(Phosph = grepl("Phosp", pep_var_mod)) %>%
   summarize(nonphos_to_phos = n[!Phosph]/n[Phosph])
-
-
-mascot$pep_scan_title
-#Function to return number of unique prot IDs per LC run
-
-pep_per_run <- function(mascot_file, skip = 71, name_end = 10) {
-  df <-
-    read.csv(mascot_file, skip = skip, header = T, sep = ",", stringsAsFactors = F) %>%
-    select(prot_acc, pep_scan_title) %>%
-    mutate(pep_scan_title = substr(pep_scan_title, 1, name_end)) %>%
-    #would be good to be able to
-    distinct() %>%
-    group_by(pep_scan_title) %>%
-    tally() %>%
-    return()
-}
 
 
 
