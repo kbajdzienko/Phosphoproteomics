@@ -1,28 +1,26 @@
 # As for the EXP summary:
 # Getting 2 tables with numbers:
-# 1)
-#
-# 2)
-# Table with median_CV for each sample_group in the experiment
+
 # And plots:
 # Abundance plots IN msstats: box plot on page 14 and profile plots on page 15
 # I think those profile plots are quite informative (and colorful).
 
-mascot <- read.csv(mascot_file, skip = skip, header = T, sep = ",", stringsAsFactors = F)
+
+
+mascot <- read.csv(mascot_file,
+                   skip = skip,
+                   header = T,
+                   sep = ",",
+                   stringsAsFactors = F)
 mascot <- tbl_df(mascot)
 
 # All identified proteins
-prot.num <-
-  select(mascot, prot_acc) %>%
-  distinct() %>%
-  count()
+prot.num <- summarize(mascot, Proteins = n_distinct(prot_acc))
 
 # Phosphorylated proteins
 prot.phos.num <-
   filter(mascot, grepl("Phosp", pep_var_mod)) %>%
-  select(prot_acc) %>%
-  distinct() %>%
-  count()
+  summarize(PhosphoProteins = n_distinct(prot_acc))
 
 # Identified unique proteins within each run -- CV
 prot.per.run.cv <-
@@ -30,7 +28,7 @@ prot.per.run.cv <-
   mutate(sample_ID = sapply(strsplit(pep_scan_title, "\\."), '[', 1)) %>%
   distinct(sample_ID, prot_acc) %>%
   count(sample_ID) %>%
-  summarize(cv = sd(n)/mean(n))
+  summarize(UniqueProteinsCV = sd(n)/mean(n))
 
 # Function to count number of phosphorilation sites
 countSites <- function(pep_start, pep_pos) {
@@ -48,20 +46,36 @@ phos.sites <-
   mascot %>%
   group_by(prot_acc) %>%
   summarize(n_sites = countSites(pep_start, pep_var_mod_pos)) %>%
-  summarize(phos_sites = sum(n_sites))
+  summarize(PhosphoSites = sum(n_sites))
 
 # Proportion: non-phosphorylated / phosphorylated peptides
 pep.phos.ratio <-
   mascot %>%
   distinct(pep_seq, pep_var_mod) %>%
   count(Phosph = grepl("Phosp", pep_var_mod)) %>%
-  summarize(nonphos_to_phos = n[!Phosph]/n[Phosph])
+  summarize('Nonphosph/Phosph' = n[!Phosph]/n[Phosph])
 
 
+table1 <- bind_cols(prot.num,
+                    prot.phos.num,
+                    prot.per.run.cv,
+                    phos.sites,
+                    pep.phos.ratio)
+
+grid.newpage()
+grid.draw(tableGrob(table1, rows = NULL))
+
+# Table with median_CV for each sample_group in the experiment
+median.peak.cv <-
+  peakCV(df) %>%
+  summarize_at(vars(-peak_ID), median, na.rm = T)
+
+grid.newpage()
+grid.draw(tableGrob(median.peak.cv, rows = NULL))
 
 
 # Histograms: Missed cleavages, Phos peptide score distribution, Peptides per protein
-barplot(table(mascot$pep_miss))
+barplot(title, table(mascot$pep_miss), space = 0)
 hist(mascot$pep_score)
 
 pep.per.prot <-
