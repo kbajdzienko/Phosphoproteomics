@@ -1,13 +1,3 @@
-for (pckg in c("plyr", "dplyr", "tidyr"))  {
-  if (!require(pckg, character.only = T)) install.packages(pckg)
-}
-
-library(plyr)
-library(dplyr)
-library(tidyr)
-
-source("report_PQI_new.R")
-source("make_annID_new.R")
 
 # This funciton is basically just conversion of the file into the set of easy-to-use dataframes
 
