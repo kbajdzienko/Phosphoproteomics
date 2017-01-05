@@ -44,10 +44,10 @@ df_NA_cv_sum <- annCV(df_NA)
 plot(df_cv$'GLU-015', log10(df_cv$Score))
 cor(log10(df_cv$Score), df_cv$`AZD/GLU-240`, use = "pairwise.complete.obs")
 
-#How many zero values are in the data frame?
-df_sum <- df$intData %>%
+#How many NAs there are in the data frame?
+df_nas <- df$intData %>%
   group_by(sample_ID) %>%
-  summarize(sum = sum(intensity==0))
+  summarize(sum = sum(is.na))
 
 #Sum intensities for phos sites from samples
 df_sum <-
