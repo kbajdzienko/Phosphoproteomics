@@ -1,45 +1,58 @@
-ions <- read.csv("exp19-3 peptide ions.csv",
-               skip = 2,
-               header = T, sep = ",",
-               stringsAsFactors = F,
-               colClasses = "character")
+# Remove peptides with more than one Accession based on ion PQI output table
 
-ions <- tbl_df(ions)
+filter_pep_unique <- function (df, ions_file) {
+  ions <- read.csv(ions_file,
+                   skip = 2,
+                   header = T, sep = ",",
+                   stringsAsFactors = F,
+                   colClasses = "character")
 
-ions <-
-  ions %>%
-  select(1:2,5,8:12) %>%
-  setNames(c("ion_ID", "RT", "Neutral_mass",
-             "Score", "Sequence", "Modifications",
-             "Accession", "All_accessions")) %>%
-  mutate_at(vars(RT:Score), as.numeric)
+  ions <-
+    tbl_df(ions) %>%
+    select(1:2, 5, 8:12) %>%
+    setNames(c("ion_ID", "RT", "Neutral_mass",
+               "Score", "Sequence", "Modifications",
+               "Accession", "All_accessions")) %>%
+    mutate_at(vars(RT:Score), as.numeric)
 
-dupl_ions <- filter(ions, grepl(";", ions$All_accessions))
+  dupl_ions <- filter(ions, grepl(";", ions$All_accessions))
 
-df_redup <- df
-df_redup$peakData <- anti_join(df$peakData, dupl_ions, by = "Sequence")
+  # Test if the list of accessions is always the same for a certain sequence
+  is.diff <- function(all_acc) {
+    is.diff <-
+      all_acc %>%
+      strsplit(";") %>%
+      outer(., ., Vectorize(setequal)) %>%
+      all() %>%
+      !.
+    return(is.diff)
+  }
 
-# Get the list of proteins not having a unique peptide
-prot.nonuniq <- df$peakData %>% distinct(Accession)
-prot.uniq <- df_redup$peakData %>% distinct(Accession)
-setdiff(prot.nonuniq, prot.uniq)
+  #Apply is.diff function to every sequence and filter the different ones
+  dupl_ions_diff <-
+    dupl_ions %>%
+    group_by(Sequence) %>%
+    filter(is.diff(All_accessions))
+  if (nrow(dupl_ions_diff) != 0) {
+    warning("Some sequences have different lists of possible accessions:\n",
+            paste0(unique(dupl_ions$Sequence), "\n"))
+  }
 
-###
-# Test if all sets of accessions are the same for a certain sequence
-diffAcc <- function(all_acc) {
-  is.diff <-
-    all_acc %>%
-    strsplit(";") %>%
-    outer(., ., Vectorize(setequal)) %>%
-    all() %>%
-    !.
-  return(is.diff)
-}
+  # Exclude non-unique from data
+  df_unique <- df
+  dupl_ions <- semi_join(df$peakData, by = "Sequence")
+  df_unique$peakData <- anti_join(df$peakData, dupl_ions, by = "Sequence")
+  df_unique$intData <- anti_join(df$intData, dupl_ions, by = "Sequence")
 
-dupl_ions %>%
-  group_by(Sequence) %>%
-  summarize(diff_acc = diffAcc(All_accessions)) %>%
-  filter(diff_acc)
+  # Get the list of proteins not having a unique peptide
+  prot.nonuniq <-
+    setdiff(unique(df$peakData$Accession),
+            unique(df_unique$peakData$Accession))
 
-###
+  if (length(prot.nonuniq) != 0)
+    message("Proteins having no unique peptides:\n",
+            paste0(prot.nonuniq, "\n"))
 
+  return(df_unique)
+
+  }

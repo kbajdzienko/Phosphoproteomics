@@ -1,15 +1,3 @@
-# Sum intensities for the same protein, the same modification
-sumANN <- function(df) {
-  df$intData <-
-    df$intData %>%
-    left_join(select(df$peakData, peak_ID, ann_ID)) %>%
-    group_by(ann_ID, sample_ID) %>%
-    summarize_at(vars(intensity), sum, na.rm = T) %>%
-    mutate(intensity = zero.to.na(intensity)) %>%
-    ungroup()
-  return(df)
-}
-
 # Normalization by median intensity of all the peaks in sample
 normMedian <- function(df) {
   df$intData <-
@@ -20,13 +8,11 @@ normMedian <- function(df) {
   return(df)
 }
 
-# Fill missing values
+# Fill missing values with PCA-based methods (PPCA or BPCA)
 fillNA <- function(df, method = c("ppca", "bpca")) {
   match.arg(method, c("ppca", "bpca"))
-  intMatrix <- intTable(df) %>%
-    as.data.frame() %>%
-    'row.names<-'(.$peak_ID) %>% head()
-    select(-peak_ID) %>%
+  intMatrix <-
+    intMatrix(df) %>%
     t() %>%
     log10()
 
@@ -37,16 +23,13 @@ fillNA <- function(df, method = c("ppca", "bpca")) {
   df$intData <-
     10^intMatrix %>%
     t() %>%
-    as.data.frame() %>%
-    mutate(peak_ID = row.names(.)) %>%
-    select(peak_ID, everything()) %>%
-    gather("sample_ID", "intensity", -peak_ID) %>%
-    tbl_df()
+    intData()
 
   return(df)
 }
 
-logTransform <- function(df) {
-  df$intData <- mutate_at(df$intData, vars(intensity), log10)
+# Fill missing values with PCA-based methods (PPCA or BPCA)
+logTransform <- function(df, base = 2) {
+  df$intData <- mutate_at(df$intData, intensity = log(intensity, base = base))
   return(df)
 }
