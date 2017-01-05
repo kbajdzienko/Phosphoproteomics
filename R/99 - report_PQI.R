@@ -1,6 +1,6 @@
 # Function to merge all the dataframes into a single table
 # and write the output into the file
-report_PQI <- function (df, file) {
+report_PQI <- function (df, file = "OUTPUT/EXP.csv") {
 
   output <-
     df$peakData %>%
