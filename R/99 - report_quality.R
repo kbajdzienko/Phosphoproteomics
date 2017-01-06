@@ -58,23 +58,40 @@ QC_stat <- function(mascot_file, skip = 71) {
 }
 
 # Plot several quality control histograms
-plot_QC_hist <- function(mascot_file) {
+plot_QC_hist <- function(mascot_file, skip = 71, score = 0) {
 
+  mascot <- read.csv(mascot_file,
+                     skip = skip,
+                     header = T,
+                     sep = ",",
+                     stringsAsFactors = F)
+  mascot <- tbl_df(mascot) %>% filter(pep_score > score)
+  
   par(mfrow=c(2,2),
       oma = c(0, 0, 2, 0))
 
   # Histogram: Missed cleavages
-  barplot(table(mascot$pep_miss), space = 0)
+  hist (mascot$pep_miss,
+        freq = FALSE,
+        #main =" ", 
+        xlab ="Missed cleaveges", 
+        ylab ="Density",
+        #ylim = c(1,5000),
+        xlim = c(0,3),
+        breaks = seq(0,3, by=1),
+        xaxt='n',
+        right = FALSE)
+  axis(side=1, at=seq(0.5,3,1), labels=seq(0,2,1))
 
   # Histogram: Phos peptide score distribution
-  hist(as.numeric(mascot$pep_score))
+  hist(as.numeric(mascot$pep_score), freq = FALSE)
 
   # Histogram: Peptides per protein
   pep.per.prot <-
     mascot %>%
     distinct(prot_acc, pep_seq) %>%
     count(prot_acc)
-  hist(pep.per.prot$n, breaks = 20)
+  hist(pep.per.prot$n, breaks = 20, freq = FALSE)
 
   frame()
 }
