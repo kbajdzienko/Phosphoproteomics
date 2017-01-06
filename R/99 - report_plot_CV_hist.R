@@ -16,7 +16,6 @@ peakCV <- function(df) {
 }
 
 #Sum intensities of duplicate phos site entries in each sample
-
 annCV <- function(df) {
   df_cv_sum2 <-
     df$intData %>%
@@ -30,6 +29,14 @@ annCV <- function(df) {
     spread(group, CV) %>%
     ungroup()
   return(df_cv_sum2)
+}
+
+# Get table with median CV of peak intensities for each sample_group in the experiment
+peak_CV_median <- function(df) {
+  median.peak.cv <-
+    peakCV(df) %>%
+    summarize_at(vars(-peak_ID), median, na.rm = T)
+  return(median.peak.cv)
 }
 
 # Function to plot histograms of several data frames' columns to pdf file
@@ -70,7 +77,7 @@ plot_list_hist <- function(df_list, file) {
 
 
 # Function to plot CV histograms to pdf file
-plot_list_hist_cv <- function(..., file = "CV_report.pdf") {
+plot_list_hist_cv <- function(..., file = "OUTPUT/CV_report.pdf") {
   df_names <- as.character(substitute(...()))
   df_list <- c(sapply(list(...), function(df) list(peakCV(df), annCV(df))))
   names(df_list) <- c(sapply(df_names,
