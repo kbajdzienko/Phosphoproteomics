@@ -14,7 +14,7 @@ make_annID <- function(df, mascot_file, skip = 71) {
     tbl_df() %>%
     select(prot_acc, pep_seq, pep_start, pep_end, pep_miss) %>%
     mutate_each(funs(as.integer), pep_start, pep_end, pep_miss) %>%
-    rename(Accession = prot_acc, Sequence = pep_seq) %>%
+    dplyr::rename(Accession = prot_acc, Sequence = pep_seq) %>%
     distinct()
 
   # Merge original annotation data table with mascot
