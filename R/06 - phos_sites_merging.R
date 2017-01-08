@@ -35,7 +35,6 @@ sitesMerge <- function(df) {
   return(df)
 }
 
-}
 
 # # Sum intensities for the same protein, the same modification
 # sumANN <- function(df) {
