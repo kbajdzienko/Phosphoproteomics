@@ -1,13 +1,8 @@
 # Function, calculating QC statistical metrics based on mascot output file:
 # number of identified phosphorilated proteins, sites
 
-QC_stat <- function(mascot_file, skip = 71) {
-  mascot <- read.csv(mascot_file,
-                     skip = skip,
-                     header = T,
-                     sep = ",",
-                     stringsAsFactors = F)
-  mascot <- tbl_df(mascot)
+QC_stat <- function(mascot_file) {
+  mascot <- read.mascot(mascot_file, "pep")
 
   # All identified proteins
   prot.num <- summarize(mascot, Proteins = n_distinct(prot_acc))

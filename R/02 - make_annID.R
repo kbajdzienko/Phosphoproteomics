@@ -1,17 +1,12 @@
 # Creata ann_ID in format "AT3G47070.1_T65_T66"
 # Accession, phosphorilated amino acid, number
 
-make_annID <- function(df, mascot_file, skip = 71) {
+make_annID <- function(df, mascot_file) {
 
   # Remove everything but Sequence, Accession, start and end position
   # and number of missed cleaveges from mascot output file
   mascot <-
-    read.csv(mascot_file,
-             skip = skip,
-             header = T, sep = ",",
-             stringsAsFactors = F,
-             colClasses = "character") %>%
-    tbl_df() %>%
+    read.mascot(mascot_file, "pep") %>%
     select(prot_acc, pep_seq, pep_start, pep_end, pep_miss) %>%
     mutate_each(funs(as.integer), pep_start, pep_end, pep_miss) %>%
     dplyr::rename(Accession = prot_acc, Sequence = pep_seq) %>%
