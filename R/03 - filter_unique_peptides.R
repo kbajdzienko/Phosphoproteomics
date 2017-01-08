@@ -17,6 +17,7 @@ filter_pep_unique <- function (df, ions_file) {
 
   dupl_ions <- filter(ions, grepl(";", ions$All_accessions))
 
+  #-----------------------------------------------------------------------
   # Test if the list of accessions is always the same for a certain sequence
   is.diff <- function(all_acc) {
     is.diff <-
@@ -27,7 +28,6 @@ filter_pep_unique <- function (df, ions_file) {
       !.
     return(is.diff)
   }
-
   #Apply is.diff function to every sequence and filter the different ones
   dupl_ions_diff <-
     dupl_ions %>%
@@ -37,12 +37,13 @@ filter_pep_unique <- function (df, ions_file) {
     warning("Some sequences have different lists of possible accessions:\n",
             paste0(unique(dupl_ions$Sequence), "\n"))
   }
-
+  #-----------------------------------------------------------------------
+  
   # Exclude non-unique from data
   df_unique <- df
-  dupl_ions <- semi_join(df$peakData, by = "Sequence")
-  df_unique$peakData <- anti_join(df$peakData, dupl_ions, by = "Sequence")
-  df_unique$intData <- anti_join(df$intData, dupl_ions, by = "Sequence")
+  dupl_peaks <- semi_join(df$peakData, dupl_ions, by = "Sequence")
+  df_unique$peakData <- anti_join(df$peakData, dupl_peaks)
+  df_unique$intData <- anti_join(df$intData, dupl_peaks)
 
   # Get the list of proteins not having a unique peptide
   prot.nonuniq <-
