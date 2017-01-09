@@ -1,4 +1,6 @@
-int_profile_median <- function(df) {
+# Plot MSstat general intensity profile accross the samples for quality check
+
+plot_int_profile <- function(df) {
   require(ggplot2)
   y.limup <- ceiling(max(log2(df$intData$intensity), na.rm=TRUE) + 3)
   y.limdown <- -1
@@ -25,7 +27,8 @@ int_profile_median <- function(df) {
     scale_y_continuous('Log2-intensities', limits = c(y.limdown, y.limup))+
     geom_vline(xintercept = lineNameAxis + 0.5, colour = "grey", linetype = "longdash") +
     #labs(title = "All proteins")+
-    geom_text(data = groupName, aes(x = sample_ID, y = intensity, label = Name),
+    geom_text(data = groupName,
+              aes(x = sample_ID, y = intensity, label = Name),
               size = 4, angle = 0, color = "black")+
     theme(
       panel.background=element_rect(fill='white', colour="black"),
