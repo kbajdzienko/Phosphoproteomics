@@ -1,5 +1,7 @@
 # Split not cleaved peptides into single phosphorilation sites and sum intensitites
 # for the same ann_ID (protein/site)
+# Save intensity data in annIntData table
+# Save annotation data in annData table
 
 sitesMerge <- function(df) {
   # Function splitting ann_ID into by phosphorilation sites and replicating row as
@@ -22,6 +24,8 @@ sitesMerge <- function(df) {
     ddply("peak_ID", splitSites) %>%
     tbl_df() %>%
     bind_rows(filter(df$peakData, !grepl("_[[:alnum:]]+_", ann_ID)))
+
+  df$annData <- distinct(mult_sites, ann_ID, Accession, Description)
 
   # Sum intensities for the same ann_ID (same protein/phosphorilation site)
   df$annIntData <-
