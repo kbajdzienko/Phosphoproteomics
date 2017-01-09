@@ -1,6 +1,9 @@
+if (!require("plyr", character.only = T)) install.packages("plyr")
 if (!require("tidyverse", character.only = T)) install.packages("tidyverse")
 
+library(plyr)
 library(tidyverse)
+
 
 source("R/01.1 - tidy_PQI.R")
 source("R/01.2 - mascot_pep_query.R")

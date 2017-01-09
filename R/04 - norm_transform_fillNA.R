@@ -28,7 +28,7 @@ fillNA <- function(df, method = c("ppca", "bpca")) {
   return(df)
 }
 
-# Fill missing values with PCA-based methods (PPCA or BPCA)
+# Log-transform data
 logTransform <- function(df, base = 2) {
   df$intData <- mutate(df$intData, intensity = log(intensity, base = base))
   return(df)

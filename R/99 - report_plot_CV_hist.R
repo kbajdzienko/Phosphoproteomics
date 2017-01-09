@@ -1,5 +1,4 @@
 # Example of usage
-# Plot the fucking histograms
 # plot_list_hist_cv(file = "CV.pdf", df, df_NA, df_NA_score24, df_NA_score5, df_score24)
 
 #Calculate coeficient of variation within replicates of each group

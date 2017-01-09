@@ -18,10 +18,10 @@ make_annID <- function(df, mascot_file) {
   # and number of missed cleaveges from mascot output file
   mascot <-
     mascot_conf(mascot_file) %>%
-    select(prot_acc, pep_seq,
+    select(prot_acc, pep_seq, pep_score,
            pep_start, pep_end, pep_miss,
            pep_exp_mr, pep_var_mod_conf) %>%
-    rename(Accession = prot_acc,
+    dplyr::rename(Accession = prot_acc,
            Sequence = pep_seq,
            Score = pep_score,
            Neutral_mass = pep_exp_mr) %>%
