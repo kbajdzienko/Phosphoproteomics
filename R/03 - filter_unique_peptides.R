@@ -1,20 +1,7 @@
 # Remove peptides with more than one Accession based on ion PQI output table
 
 filter_pep_unique <- function (df, ions_file) {
-  ions <- read.csv(ions_file,
-                   skip = 2,
-                   header = T, sep = ",",
-                   stringsAsFactors = F,
-                   colClasses = "character")
-
-  ions <-
-    tbl_df(ions) %>%
-    select(1:2, 5, 8:12) %>%
-    setNames(c("ion_ID", "RT", "Neutral_mass",
-               "Score", "Sequence", "Modifications",
-               "Accession", "All_accessions")) %>%
-    mutate_at(vars(RT:Score), as.numeric)
-
+  ions <- read.ions(ions_file)
   dupl_ions <- filter(ions, grepl(";", ions$All_accessions))
 
   #-----------------------------------------------------------------------
@@ -38,7 +25,7 @@ filter_pep_unique <- function (df, ions_file) {
             paste0(unique(dupl_ions$Sequence), "\n"))
   }
   #-----------------------------------------------------------------------
-  
+
   # Exclude non-unique from data
   df_unique <- df
   dupl_peaks <- semi_join(df$peakData, dupl_ions, by = "Sequence")
