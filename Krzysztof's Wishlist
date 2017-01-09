@@ -1,7 +1,3 @@
-+ script to extract query table or peptide table from mascot file
-- calculate mascot delta score and normalized mascot delta score
-+ 99 report quality script -> add functions to report quality metrics and plot histograms from tidy_df's
-- distribution (frequency, not density) of single, double, triple and quadruple phosphorylated peptides (taken from df)
 - plots: clustering of dynamic phosphorylation profiles , Functional Categories of Regulated Phosphoproteins
   (please check F1000 :Fig3 and Fig4, Global, in vivo, and site-specific phosphorylation dynamics in signaling networks.)
 
