@@ -5,7 +5,7 @@ library(plyr)
 library(tidyverse)
 
 source("R/01.1 - tidy_PQI.R")
-source("R/01.2 - mascot_pep_query.R")
+source("R/01.2 - read_mascot.R")
 source("R/01.3 - intData_formats.R")
 source("R/01.4 - read_ions.R")
 source("R/02 - make_annID.R")
