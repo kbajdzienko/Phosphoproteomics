@@ -33,11 +33,11 @@ read.mascot <- function(mascot_file, data = "pep") {
       mascot %>%
       select(prot_acc, prot_score,
              pep_query, pep_isbold, pep_isunique,
-             pep_start, pep_end, pep_miss,
+             pep_start, pep_end, pep_miss, pep_exp_mr,
              pep_score, pep_seq, pep_var_mod, pep_var_mod_pos,
              pep_scan_title) %>%
       mutate_at(vars(prot_score:pep_miss), as.integer) %>%
-      mutate_at(vars(pep_score), as.numeric) %>%
+      mutate_at(vars(pep_exp_mr, pep_score), as.numeric) %>%
       mutate_at(vars(pep_isbold, pep_isunique), as.logical) %>%
       rename(query_number = pep_query)
 
@@ -46,9 +46,11 @@ read.mascot <- function(mascot_file, data = "pep") {
       mascot %>%
       filter(pep_seq != "") %>%
       select(query_number, pep_score, pep_seq,
-             pep_var_mod, pep_var_mod_pos, pep_scan_title) %>%
+             pep_var_mod, pep_var_mod_pos, pep_scan_title,
+             pep_var_mod_conf) %>%
       mutate_at(vars(query_number), as.integer) %>%
-      mutate_at(vars(pep_score), as.numeric)
+      mutate_at(vars(pep_score), as.numeric) %>%
+      mutate(pep_var_mod_conf = as.numeric(gsub("\\%","", pep_var_mod_conf)))
   }
 
   return(mascot)
