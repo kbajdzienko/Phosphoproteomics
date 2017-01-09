@@ -3,13 +3,28 @@
 
 make_annID <- function(df, mascot_file) {
 
+  # Reads mascot file, takes peptide table and joins pep_var_mod_conf from query table
+  mascot_conf <- function(mascot_file) {
+    dupl <- function(x) duplicated(x) | duplicated(x, fromLast = T)
+
+    query <- read.mascot(mascot_file, "query")
+    mascot <- read.mascot(mascot_file, "pep")
+    query$pep_var_mod_conf[!dupl(query$query_number)] <- 100
+    mascot <- left_join(mascot, query)
+    return(mascot)
+  }
+
   # Remove everything but Sequence, Accession, start and end position
   # and number of missed cleaveges from mascot output file
   mascot <-
-    read.mascot(mascot_file, "pep") %>%
-    select(prot_acc, pep_seq, pep_start, pep_end, pep_miss) %>%
-    mutate_each(funs(as.integer), pep_start, pep_end, pep_miss) %>%
-    dplyr::rename(Accession = prot_acc, Sequence = pep_seq) %>%
+    mascot_conf(mascot_file) %>%
+    select(prot_acc, pep_seq,
+           pep_start, pep_end, pep_miss,
+           pep_exp_mr, pep_var_mod_conf) %>%
+    rename(Accession = prot_acc,
+           Sequence = pep_seq,
+           Score = pep_score,
+           Neutral_mass = pep_exp_mr) %>%
     distinct()
 
   # Merge original annotation data table with mascot
