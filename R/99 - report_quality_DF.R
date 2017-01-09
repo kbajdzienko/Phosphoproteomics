@@ -30,7 +30,7 @@ QC_stat <- function(df) {
       summarize(PhosphoSites = n_distinct(ann_ID))
   }
 
-  # Proportion: non-phosphorylated / phosphorylated peptides
+  # Proportion: non-phosphorylated / phosphorylated peptidestable(df$peakData$pep_miss)
   pep.phos.ratio <-
     df$peakData %>%
     distinct(Sequence, Modifications) %>%
@@ -46,12 +46,39 @@ QC_stat <- function(df) {
 # Plot several quality control histograms
 plot_QC_hist <- function(df) {
 
-  par(mfrow=c(2,2),
-      oma = c(0, 0, 2, 0))
+  par(mfrow=c(2,2))
 
   # Histogram: Missed cleavages
-  barplot(table(df$peakData$pep_miss), space = 0,
+  pep.miss <-
+    df$peakData %>%
+    distinct(Sequence, pep_miss) %>%
+    .$pep_miss
+  barplot(table(pep.miss)/length(pep.miss),
+          space = 0,
           main = "Missed cleavages number",
+          col = "white",
+          ylab = "Frequency")
+
+  # Histogram: Phosphorilation sites per peptide
+  phosh.sites.counts <-
+    df$peakData %>%
+    distinct(Sequence, Modifications) %>%
+    .$Modifications %>%
+    stringr::str_count("Phospho")
+  barplot(table(phosh.sites.counts)/length(phosh.sites.counts),
+          space = 0,
+          main = "Phosphorilation sites per peptide",
+          col = "white",
+          ylab = "Frequency")
+
+  # Histogram: Peptides per protein
+  pep.per.prot <-
+    df$peakData %>%
+    distinct(Accession, Sequence) %>%
+    count(Accession)
+  barplot(table(pep.per.prot$n)/nrow(pep.per.prot),
+          space = 0,
+          main = "Peptides per protein",
           col = "white",
           ylab = "Frequency")
 
@@ -60,15 +87,5 @@ plot_QC_hist <- function(df) {
        main = "Score distribution",
        xlab = NULL)
 
-  # Histogram: Peptides per protein
-  pep.per.prot <-
-    df$peakData %>%
-    distinct(Accession, Sequence) %>%
-    count(Accession)
-  barplot(table(pep.per.prot$n), space = 0,
-          main = "Peptides per protein",
-          col = "white",
-          ylab = "Frequency")
-
-  frame()
+  par(mfrow = c(1, 1))
 }
