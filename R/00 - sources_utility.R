@@ -1,10 +1,6 @@
-for (pckg in c("plyr", "dplyr", "tidyr"))  {
-  if (!require(pckg, character.only = T)) install.packages(pckg)
-}
+if (!require("tidyverse", character.only = T)) install.packages("tidyverse")
 
-library(plyr)
-library(dplyr)
-library(tidyr)
+library(tidyverse)
 
 source("R/01 - tidy_PQI.R")
 source("R/011 - intData_formats.R")
