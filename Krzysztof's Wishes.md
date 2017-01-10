@@ -7,6 +7,8 @@
 - [ ] plots: clustering of dynamic phosphorylation profiles, Functional Categories of Regulated Phosphoproteins (please check F1000 :Fig3 and Fig4, Global, in vivo, and site-specific phosphorylation dynamics in signaling networks.)
 - [x] histograms -> rewrite from counts to density
 - [x] Profile plot -- all peaks by Accession.
+- [ ] PCA (with loadings)
+- [ ] Volcano plot (p-val/fold change)
 
 - [ ] for future: import profile for MaxQuant output to PDA workflow
 
