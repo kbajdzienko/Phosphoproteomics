@@ -8,7 +8,7 @@ read.mascot <- function(mascot_file, data = "pep") {
     # Read peptides table till queries table or till the end if there is no query data
     skip <- grep("prot_hit_num", mascot) - 1
     if (any(grepl("Queries", mascot))) {
-      nrows <- grep("Queries", mascot) - grep("prot_hit_num", mascot) - 1
+      nrows <- grep("Queries", mascot) - grep("prot_hit_num", mascot) - 2
     } else {
       nrows <- -1L
     }
