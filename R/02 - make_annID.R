@@ -18,7 +18,7 @@ make_annID <- function(df, mascot_file) {
   # and number of missed cleaveges from mascot output file
   mascot <-
     mascot_conf(mascot_file) %>%
-    select(prot_acc, pep_seq,
+    select(prot_acc, pep_seq, pep_score,
            pep_start, pep_end, pep_miss,
            pep_exp_mr, pep_var_mod_conf) %>%
     rename(Accession = prot_acc,
@@ -26,6 +26,10 @@ make_annID <- function(df, mascot_file) {
            Score = pep_score,
            Neutral_mass = pep_exp_mr) %>%
     distinct()
+
+  # Round Neutral_mass to get match between df and mascot
+  mascot <- mutate(mascot, Neutral_mass = round(Neutral_mass, 4))
+  df$peakData <- mutate(df$peakData, Neutral_mass = round(Neutral_mass, 4))
 
   # Merge original annotation data table with mascot
   peakData <-
