@@ -15,6 +15,7 @@
 #### FIX:
 - [ ] sitesMerge - different number of ann_IDs in peakData and annIntData - HOW
 - [ ] ADD check for uniqueness of sequence-accession-mass-score combination for merging df and mascot in make_annID
+- [ ] Round Neutral mass in make_annID before joining df and mascot
 
 #### Suggestions:
 - [ ] Missing values statistics
