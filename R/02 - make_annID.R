@@ -27,6 +27,10 @@ make_annID <- function(df, mascot_file) {
            Neutral_mass = pep_exp_mr) %>%
     distinct()
 
+  # Round Neutral_mass to get match between df and mascot
+  mascot <- mutate(mascot, Neutral_mass = round(Neutral_mass, 4))
+  df$peakData <- mutate(df$peakData, Neutral_mass = round(Neutral_mass, 4))
+
   # Merge original annotation data table with mascot
   peakData <-
     df$peakData %>%

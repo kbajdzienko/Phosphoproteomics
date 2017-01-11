@@ -9,7 +9,7 @@ normMedian <- function(df) {
 }
 
 # Fill missing values with PCA-based methods (PPCA or BPCA)
-fillNA <- function(df, method = c("ppca", "bpca")) {
+fillNA <- function(df, method = "ppca") {
   match.arg(method, c("ppca", "bpca"))
   intMatrix <-
     intMatrix(df) %>%
@@ -18,7 +18,7 @@ fillNA <- function(df, method = c("ppca", "bpca")) {
 
   intMatrix[is.na(intMatrix)] <-
     pcaMethods::completeObs(
-      pcaMethods::pca(intMatrix, center = T, method = "ppca"))[is.na(intMatrix)]
+      pcaMethods::pca(intMatrix, center = T, method = method))[is.na(intMatrix)]
 
   df$intData <-
     10^intMatrix %>%
