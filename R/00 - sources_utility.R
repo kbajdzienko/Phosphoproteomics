@@ -15,11 +15,12 @@ source("R/04 - norm_transform_fillNA.R")
 source("R/05 - filter_NA_filter_score.R")
 source("R/06 - phos_sites_merging.R")
 source("R/99 - report_PQI.R")
-#source("R/99 - report_quality.R")
+source("R/99 - report_quality.R")
 source("R/99 - report_quality_DF.R")
 source("R/99 - report_plot_CV_hist.R")
 source("R/99 - report_abundance_distribution.R")
 source("R/99 - report_protein_profile.R")
+source("R/99 - report_mass_accuracy.R")
 
 zero.to.na <- function(x) {
   x[x==0] <- NA
