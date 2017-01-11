@@ -5,16 +5,8 @@ make_annID <- function(df, mascot_file) {
 
   # Read mascot and rename some variables for future joining
   mascot <-
-<<<<<<< HEAD
-    mascot_conf(mascot_file) %>%
-    select(prot_acc, pep_seq, pep_score,
-           pep_start, pep_end, pep_miss,
-           pep_exp_mr, pep_var_mod_conf) %>%
-    dplyr::rename(Accession = prot_acc,
-=======
     read.mascot(mascot_file) %>%
     rename(Accession = prot_acc,
->>>>>>> 9aa98aea1f093e878b8b47cee9c7b920995fccf4
            Sequence = pep_seq,
            Score = pep_score,
            Neutral_mass = pep_exp_mr) %>%
