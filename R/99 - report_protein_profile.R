@@ -21,7 +21,7 @@ plot_acc <- function(df, protein) {
   data.sum <-
     data %>%
     group_by(sample_ID) %>%
-    summarize(intensity = median(intensity))
+    summarize(intensity = median(intensity, na.rm = T))
 
   ptempall <-
     ggplot() +

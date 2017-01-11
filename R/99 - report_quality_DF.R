@@ -57,7 +57,9 @@ plot_QC_hist <- function(df) {
           space = 0,
           main = "Missed cleavages number",
           col = "white",
-          ylab = "Frequency")
+          ylab = "Frequency",
+          ylim = c(0,1)
+          )
 
   # Histogram: Phosphorilation sites per peptide
   phosh.sites.counts <-
@@ -67,7 +69,7 @@ plot_QC_hist <- function(df) {
     stringr::str_count("Phospho")
   barplot(table(phosh.sites.counts)/length(phosh.sites.counts),
           space = 0,
-          main = "Phosphorilation sites per peptide",
+          main = "Phosphorylation sites per peptide",
           col = "white",
           ylab = "Frequency")
 
@@ -85,7 +87,8 @@ plot_QC_hist <- function(df) {
   # Histogram: Phos peptide score distribution
   hist(as.numeric(df$peakData$Score),
        main = "Score distribution",
-       xlab = NULL)
+       xlab = NULL,
+       breaks = seq(0,max(as.numeric(df$peakData$Score)+10), by = 10))
 
   par(mfrow = c(1, 1))
 }

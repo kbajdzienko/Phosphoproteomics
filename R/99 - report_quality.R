@@ -1,7 +1,7 @@
 # Function, calculating QC statistical metrics based on mascot output file:
 # number of identified phosphorilated proteins, sites
 
-QC_stat <- function(mascot_file) {
+QC_stat_mascot <- function(mascot_file) {
   mascot <- read.mascot(mascot_file, "pep")
 
   # All identified proteins
@@ -53,42 +53,58 @@ QC_stat <- function(mascot_file) {
 }
 
 # Plot several quality control histograms
-plot_QC_hist <- function(mascot_file, skip = 71, score = 0) {
-
-  mascot <- read.csv(mascot_file,
-                     skip = skip,
-                     header = T,
-                     sep = ",",
-                     stringsAsFactors = F)
+plot_QC_hist_mascot <- function(mascot_file, score = 0) {
+  
+  mascot <- read.mascot(mascot_file, "pep")
+  
   mascot <- tbl_df(mascot) %>% filter(pep_score > score)
   
   par(mfrow=c(2,2),
       oma = c(0, 0, 2, 0))
 
-  # Histogram: Missed cleavages
-  hist (mascot$pep_miss,
-        freq = FALSE,
-        #main =" ", 
-        xlab ="Missed cleaveges", 
-        ylab ="Density",
-        #ylim = c(1,5000),
-        xlim = c(0,3),
-        breaks = seq(0,3, by=1),
-        xaxt='n',
-        right = FALSE)
-  axis(side=1, at=seq(0.5,3,1), labels=seq(0,2,1))
-
-  # Histogram: Phos peptide score distribution
-  hist(as.numeric(mascot$pep_score), freq = FALSE)
-
-  # Histogram: Peptides per protein
-  pep.per.prot <-
-    mascot %>%
-    distinct(prot_acc, pep_seq) %>%
-    count(prot_acc)
-  hist(pep.per.prot$n, breaks = 20, freq = FALSE)
-
-  frame()
-}
-
+     # Histogram: Missed cleavages
+    pep.miss <-
+      mascot %>%
+      distinct(pep_seq, pep_miss) %>%
+      .$pep_miss
+    barplot(table(pep.miss)/length(pep.miss),
+            space = 0,
+            main = "Missed cleavages number",
+            col = "white",
+            ylab = "Frequency",
+            ylim = c(0, 1))
+    
+    # Histogram: Phosphorilation sites per peptide
+    phosh.sites.counts <-
+      mascot %>%
+      distinct(pep_seq, pep_var_mod_pos) %>%
+      .$pep_var_mod_pos %>%
+      stringr::str_count("3")
+    barplot(table(phosh.sites.counts)/length(phosh.sites.counts),
+            space = 0,
+            main = "Phosphorilation sites per peptide",
+            col = "white",
+            ylab = "Frequency")
+    
+    # Histogram: Peptides per protein
+    pep.per.prot <-
+      mascot %>%
+      distinct(prot_acc, pep_seq) %>%
+      count(prot_acc)
+    barplot(table(pep.per.prot$n)/nrow(pep.per.prot),
+            space = 0,
+            main = "Peptides per protein",
+            col = "white",
+            ylab = "Frequency")
+    
+    # Histogram: Phos peptide score distribution
+    hist(as.numeric(mascot$pep_score),
+         main = "Score distribution",
+         xlab = NULL,
+         breaks = seq(0,max(as.numeric(mascot$pep_score)+10), by = 10))
+    
+    
+    par(mfrow = c(1, 1))
+  }
+  
 
