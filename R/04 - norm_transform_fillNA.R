@@ -8,6 +8,17 @@ normMedian <- function(df) {
   return(df)
 }
 
+# Mean-centering and scaling
+normScale <- function(df) {
+  df$intData <-
+    df$intData %>%
+    group_by(peak_ID) %>%
+    mutate(intensity = (intensity - mean(intensity))/sd(intensity)) %>%
+    ungroup()
+  return(df)
+}
+
+
 # Fill missing values with PCA-based methods (PPCA or BPCA)
 fillNA <- function(df, method = "ppca") {
   match.arg(method, c("ppca", "bpca"))
