@@ -20,8 +20,9 @@ ions:
 AT2G28000.1;AT2G33210.1;AT3G23990.1
 \#7516 \#17770 \#25076
 
-Turn to LSGGVAVLK in peptides table.  
-  
+Turn to LSGGVAVLK in peptides table.
+
+----
 
 ###Case 2
 
