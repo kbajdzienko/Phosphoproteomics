@@ -1,25 +1,32 @@
 # Functions reading mascot files
 
 read.mascot <- function(mascot_file, data = "pep") {
+
   match.arg(data, c("pep", "query"))
-  mascot <- readLines(mascot_file)
+  file.in <- file(mascot_file, 'rt')
+  mascot <- readLines(mascot_file, n = 100)
+  line_prot <- grep("prot_hit_num", mascot)
+
+  # Read file in chunks till Queries are found
+  i <- -1
+  while(!any(grepl("Queries", mascot))) {
+    i <- i + 1
+    mascot <- readLines(file.in, n = 100)
+  }
+  line_queries <- (i*100 + grep("Queries", mascot))
 
   if (data == "pep") {
-    # Read peptides table till queries table or till the end if there is no query data
-    skip <- grep("prot_hit_num", mascot) - 1
-    if (any(grepl("Queries", mascot))) {
-      nrows <- grep("Queries", mascot) - grep("prot_hit_num", mascot) - 2
-    } else {
-      nrows <- -1L
-    }
+    # Read peptides table till queries table
+    skip <- line_prot - 1
+    nrows <- line_queries - line_prot - 2
   } else if (data == "query") {
     # Read query table till the end
-    skip <- grep("query_number", mascot) - 1
-    if (length(skip) == 0) {
-      stop("No query data detected in mascot file")
-    }
+    skip <- line_queries + 1
     nrows <- -1L
   }
+
+  close(file.in)
+
 
   mascot <- tbl_df(read.csv(mascot_file,
                             skip = skip,
