@@ -74,7 +74,7 @@ make_conf <- function(df, mascot_file) {
       unlist() %>%
       paste(collapse = "\n") %>%
       message("Peaks with multiple mascot matches:\n", .)
-  } else message("No peaks with multiple mascot matches.", .)
+  } else message("No peaks with multiple mascot matches.")
 
   # Final output
   df$peakData <- left_join(df$peakData, df_conf)
