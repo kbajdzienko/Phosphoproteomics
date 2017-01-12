@@ -1,8 +1,9 @@
-make_conf <- function(df, mascot, mascot_file) {
+make_conf <- function(df, mascot_file) {
 
-  # Read query table
-  # To queries with only one annotation assign confidence score 100%
+  mascot <- read.mascot(mascot_file, "pep")
   query <- read.mascot(mascot_file, "query")
+
+  # To queries with only one annotation assign confidence score 100%
   query$pep_var_mod_conf[!dupl(query$query_number)] <- 100
 
   # Join pep_var_mod_conf from query table to peptide table
@@ -25,7 +26,7 @@ make_conf <- function(df, mascot, mascot_file) {
     mascot.round <- mutate(mascot., Neutral_mass = round(Neutral_mass, digits = digits))
     peaks.round <- mutate(peaks., Neutral_mass = round(Neutral_mass, digits = digits))
 
-    ## Tests of matching
+    # Tests of matching
     mismatch <- nrow(anti_join(peaks.round, mascot.round))
     extramatch <- nrow(left_join(peaks.round, mascot.round)) - nrow(peaks.)
     message("Digits = ", digits)
