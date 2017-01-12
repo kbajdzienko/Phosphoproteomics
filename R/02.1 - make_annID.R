@@ -4,23 +4,30 @@
 make_annID <- function(df, mascot_file) {
 
   # Read mascot and rename some variables for future joining
+  # Remove everything but Sequence, Accession, start and end position
+  # and number of missed cleaveges
   mascot <-
     read.mascot(mascot_file) %>%
     rename(Accession = prot_acc,
            Sequence = pep_seq,
            Score = pep_score,
            Neutral_mass = pep_exp_mr) %>%
+    select(Accession, Sequence, pep_miss, pep_start, pep_end) %>%
     distinct()
 
-  # Function removing NAs by considering I/L as the same
-  mascot <- cure_IL_NA(df, mascot)
+  # Peaks not found in Mascot for future curation
+  miss_peakData <-
+    df$peakData %>%
+    anti_join(mascot, by = c("Sequence", "Accession"))
 
-  # Remove everything but Sequence, Accession, start and end position
-  # and number of missed cleaveges and
-  # merge original annotation data table with mascot
+  # Merge original annotation data table with mascot
+  # Missed peaks are left out (use inner_join)
   peakData <-
     df$peakData %>%
-    left_join(select(mascot, Accession, Sequence, pep_miss, pep_start, pep_end))
+    inner_join(mascot)
+
+  # Curation of NAs by considering I/L as the same
+  peakData <- bind_rows(peakData, cure_IL_NA(miss_peakData, mascot))
 
   # Separate modification columns into single modifications
   # Select only phospho
@@ -54,13 +61,10 @@ make_annID <- function(df, mascot_file) {
 
 
 # Function, adding to mascot missing Sequence/Accessions in case of I/L bug
-cure_IL_NA <- function (df, mascot){
+cure_IL_NA <- function (miss_peakData, mascot) {
 
-  # Get sequences with no match
-  IL_seq <-
-    df$peakData %>%
-    anti_join(mascot, by = c("Sequence", "Accession")) %>%
-    distinct(Sequence, Accession)
+  # Get sequences/accessions with no match
+  IL_seq <- distinct(miss_peakData, Sequence, Accession)
 
   # Instead of sequence form regular expression with optional I/L positions
   IL_seq$ILSequence <-
@@ -71,10 +75,10 @@ cure_IL_NA <- function (df, mascot){
   # Create future data frame for joining IL_seq_na
   IL_mascot <- NULL
 
-  for (i in 1:nrow(IL_seq_na)) {
-    acc. <- IL_seq_na$Accession[i]
-    seq. <- IL_seq_na$Sequence[i]
-    ilseq. <- IL_seq_na$ILSequence[i]
+  for (i in 1:nrow(IL_seq)) {
+    acc. <- IL_seq$Accession[i]
+    seq. <- IL_seq$Sequence[i]
+    ilseq. <- IL_seq$ILSequence[i]
 
     # Get mascot records with Sequence matching that regular expression and
     # and corresponding Accession
@@ -102,13 +106,17 @@ cure_IL_NA <- function (df, mascot){
     IL_mascot <- bind_rows(IL_mascot, add_data)
   }
 
-  IL_seq <-
-    IL_seq %>%
-    mutate(Sequence = IL_mascot$Sequence) %>%
-    select(-ILSequence) %>%
-    bind_cols(select(IL_mascot, -Sequence))
+  # Join
+  IL_mascot <-
+    IL_mascot %>%
+    rename(mascotSequence = Sequence) %>%
+    bind_cols(IL_seq, .)
 
-  mascot <- bind_rows(mascot, IL_seq)
+  # Join with miss_peakData and take I/L sequences from mascot data frame
+  filled_peakData <-
+    left_join(miss_peakData, IL_mascot) %>%
+    mutate(Sequence = mascotSequence) %>%
+    select(-mascotSequence, -ILSequence)
 
-  return(mascot)
+  return(filled_peakData)
 }
