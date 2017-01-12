@@ -55,48 +55,60 @@ make_annID <- function(df, mascot_file) {
 
 # Function, adding to mascot missing Sequence/Accessions in case of I/L bug
 cure_IL_NA <- function (df, mascot){
-  # Funciton fixing NAs appearance
-  IL_seq_na <-
+
+  # Get sequences with no match
+  IL_seq <-
     df$peakData %>%
     anti_join(mascot, by = c("Sequence", "Accession")) %>%
     distinct(Sequence, Accession)
 
-  # Form regular expression instead of sequence with optional I/L positions
-  IL_seq_na$ILSequence <-
-    IL_seq_na$Sequence %>%
-    strsplit("") %>%
+  # Instead of sequence form regular expression with optional I/L positions
+  IL_seq$ILSequence <-
+    strsplit(IL_seq_na$Sequence, "") %>%
     lapply(gsub, pattern = "[LI]", replacement = "[LI]") %>%
-    lapply(function(x) paste0(c("^", x, "$"), collapse = "")) %>%
-    unlist()
+    sapply(function(x) paste0(c("^", x, "$"), collapse = ""))
 
-  pep_starts <- list()
+  # Create future data frame for joining IL_seq_na
+  IL_mascot <- tbl_df(data.frame())
+
   for (i in 1:nrow(IL_seq_na)) {
+    acc. <- IL_seq_na$Accession[i]
+    seq. <- IL_seq_na$Sequence[i]
+    ilseq. <- IL_seq_na$ILSequence[i]
+
+    # Get mascot records with Sequence matching that regular expression and
+    # and corresponding Accession
+
     add_data <-
       mascot %>%
-      filter(Accession == IL_seq_na$Accession[i] & grepl(IL_seq_na$ILSequence[i], Sequence)) %>%
-      distinct(pep_start, pep_end, pep_miss)
-    if (nrow(add_data) > 1) {
-      warning("Multiple I/L matches found in Mascot for ",
-              IL_seq_na$Sequence[i], " ", IL_seq_na$Accession[i])
+      filter((Accession == acc.) & grepl(ilseq., Sequence)) %>%
+      distinct(Sequence, pep_start, pep_end, pep_miss)
+
+    # If not a single sequence, replace all numbers it with NA
+    if (nrow(add_data) != 1) {
+      if (nrow(add_data) > 1)
+        warning("Multiple I/L matches found in Mascot for ", seq., " ", acc.)
+      if (nrow(add_data) == 0)
+        warning("No I/L matches found in Mascot for ", seq., " ", acc.)
+
       add_data <-
-        data.frame(pep_start = NA, pep_end = NA, pep_miss = NA) %>%
-        mutate_all(as.integer) %>%
-        tbl_df()
-    } else if (nrow(add_data) == 0) {
-      warning("No I/L matches found in Mascot for ",
-              IL_seq_na$Sequence[i], " ", IL_seq_na$Accession[i])
-      add_data <-
-        data.frame(pep_start = NA, pep_end = NA, pep_miss = NA) %>%
-        mutate_all(as.integer) %>%
+        data.frame(Sequence = seq.,
+                   pep_start = NA, pep_end = NA, pep_miss = NA) %>%
+        mutate_at(vars(-Sequence), as.integer) %>%
         tbl_df()
     }
-    pep_starts[[i]] <- add_data
+
+    # In any case add either NAs or a single record to the table for future joining
+    IL_mascot <- bind_rows(IL_mascot, add_data)
   }
 
-  mascot <-
-    IL_seq_na %>%
-    bind_cols(Reduce(bind_rows, pep_starts)) %>%
+  IL_seq <-
+    IL_seq %>%
+    mutate(Sequence = IL_mascot$Sequence) %>%
     select(-ILSequence) %>%
-    bind_rows(mascot, .)
+    bind_cols(select(IL_mascot, -Sequence))
+
+  mascot <- bind_rows(mascot, IL_seq)
+
   return(mascot)
 }
