@@ -26,3 +26,5 @@ zero.to.na <- function(x) {
   x[x==0] <- NA
   return(x)
 }
+
+dupl <- function(x) duplicated(x) | duplicated(x, fromLast = T)
