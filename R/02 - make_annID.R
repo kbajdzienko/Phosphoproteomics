@@ -69,7 +69,7 @@ cure_IL_NA <- function (df, mascot){
     sapply(function(x) paste0(c("^", x, "$"), collapse = ""))
 
   # Create future data frame for joining IL_seq_na
-  IL_mascot <- tbl_df(data.frame())
+  IL_mascot <- NULL
 
   for (i in 1:nrow(IL_seq_na)) {
     acc. <- IL_seq_na$Accession[i]
