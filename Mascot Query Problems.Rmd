@@ -9,6 +9,26 @@ output: html_document
 library(tidyverse)
 source("R/01.2 - read_mascot.R")
 load(".RData")
+
+query_dupes <- function(mascot_tbl = mascot){
+  mascot %>%
+  group_by(query_number) %>%
+  filter(n() > 1) %>%
+  arrange(query_number, desc(pep_score)) %>%
+  return()
+}
+query_choice <- function(query_tbl = query){
+  query %>%
+  semi_join(mascot, "query_number") %>%
+  group_by(query_number) %>%
+  filter(n() >= 2) %>%
+  filter(sum(!is.na(pep_var_mod_conf)) >= 1) %>%
+  filter(pep_var_mod_conf == max(pep_var_mod_conf, na.rm = T)) %>%
+  ungroup() %>%
+  anti_join(mascot, c("query_number", "pep_score")) %>%
+  arrange(desc(pep_score)) %>%
+  return()
+}
 ```
 
 *All R functions, scripts and data used can be found under*
@@ -26,82 +46,29 @@ load(".RData")
 |Ions score cut-off        | OFF    |
 |Group protein families    | ACTIVE |
 |Duplicate peptides        | ACTIVE |
+|Require Bold Red          | OFF    |
 
+*This is default Mascot OUTPUT we use (setup by server administrator)
 
-##Case 1.1: More than one peptide from the same query(MS/MS scan) in final output
+##Case 1: More than one peptide from the same query(MS/MS scan) in final output
 ```{r}
-mascot <- read.mascot("DATA/EXP19_3_PSBD_mascot_peptides_and_query.csv", "pep")
-mascot %>%
-  group_by(query_number) %>%
-  filter(n() > 3) %>%
-  arrange(query_number, desc(pep_score)) 
+mascot <- read.mascot("DATA/F011845.csv", "pep")
+query_dupes()
 ```
 
 
-##Case 1.2: Query result with lower score is picked for mascot peptide table
+##Case 2: Query result with lower score is picked for mascot peptide table
 ```{r}
-query <- read.mascot("DATA/EXP19_3_PSBD_mascot_peptides_and_query.csv", "query")
-query %>%
-  semi_join(mascot, "query_number") %>%
-  group_by(query_number) %>%
-  filter(n() > 3) %>%
-  filter(sum(!is.na(pep_var_mod_conf)) >= 3) %>%
-  filter(pep_var_mod_conf == max(pep_var_mod_conf, na.rm = T)) %>%
-  ungroup() %>%
-  anti_join(mascot, c("query_number", "pep_score")) %>%
-  arrange(desc(pep_score))
+query <- read.mascot("DATA/F011845.csv", "query")
+query_choice()
 ```
-### Confirmation on an example: 34440
+### Confirmation on an example: 923
 ```{r}
-filter(mascot, query_number == "34440") %>% select(-(prot_acc:pep_exp_mz))
-filter(query, query_number == "34440") %>% select(-(pep_var_mod:pep_scan_title))
+filter(mascot, query_number == "923") %>% select(query_number, pep_score, everything())
+filter(query, query_number == "923") %>% select(query_number, pep_score, everything())
 ```
-
 
 #Mascot OUTPUT 2
-
-> FILE: DATA\F011845_19-3_strictexportfilter.csv*
-
-| Setting                  | State  |
-|--------------------------|:------:|
-|Subset protein families   | OFF    |
-|Sameset protein families  | OFF    |
-|Ions score cut-off        | OFF    |
-|Group protein families    | ACTIVE |
-|Duplicate peptides        | OFF    |
-
-
-##Case 2.1: More than one peptide from the same query(MS/MS scan) in final output
-```{r}
-mascot_strict <- read.mascot("DATA/F011845_19-3_strictexportfilter.csv", "pep")
-mascot_strict %>%
-  group_by(query_number) %>%
-  filter(n() > 3) %>%
-  arrange(query_number, desc(pep_score)) 
-```
-
-
-##Case 2.2: Query result with lower score is picked for mascot peptide table
-```{r}
-query_strict <- read.mascot("DATA/F011845_19-3_strictexportfilter.csv", "query")
-query_strict %>%
-  semi_join(mascot_strict, "query_number") %>%
-  group_by(query_number) %>%
-  filter(n() > 3) %>%
-  filter(sum(!is.na(pep_var_mod_conf)) >= 3) %>%
-  filter(pep_var_mod_conf == max(pep_var_mod_conf, na.rm = T)) %>%
-  ungroup() %>%
-  anti_join(mascot_strict, c("query_number", "pep_score")) %>%
-  arrange(desc(pep_score))
-```
-### Confirmation on an example: 30145
-```{r}
-filter(mascot_strict, query_number == "30145") %>% select(-(prot_acc:pep_exp_mz))
-filter(query_strict, query_number == "30145") %>% select(-(pep_var_mod:pep_scan_title))
-```
-
-
-#Mascot OUTPUT 3
 
 > FILE: DATA\F011845_19-3_strictexportfilter.csv*
 
@@ -112,32 +79,110 @@ filter(query_strict, query_number == "30145") %>% select(-(pep_var_mod:pep_scan_
 |Ions score cut-off        | **5**  |
 |Group protein families    | ACTIVE |
 |Duplicate peptides        | OFF    |
+|Require Bold Red          | OFF    |
 
-
-##Case 3.1: More than one peptide from the same query (MS/MS scan) in final output
+##Case 1: More than one peptide from the same query (MS/MS scan) in final output
 ```{r}
-mascot_strict_ions5 <- read.mascot("DATA/F011845_strict_ionscutoff5.csv")
-mascot_strict_ions5 %>%
-  group_by(query_number) %>%
-  filter(n() > 3) %>%
-  arrange(query_number, desc(pep_score)) 
+mascot <- read.mascot("DATA/F011845_strict_ionscutoff5.csv")
+query_dupes()
 ```
 
-##Case 3.2: Query result with lower score is picked for mascot peptide table
+##Case 2: Query result with lower score is picked for mascot peptide table
 ```{r}
-query_strict_ions5 <- read.mascot("DATA/F011845_strict_ionscutoff5.csv", "query")
-query_strict_ions5 %>%
-  semi_join(mascot_strict_ions5, "query_number") %>%
-  group_by(query_number) %>%
-  filter(n() > 3) %>%
-  filter(sum(!is.na(pep_var_mod_conf)) >= 3) %>%
-  filter(pep_var_mod_conf == max(pep_var_mod_conf, na.rm = T)) %>%
-  ungroup() %>%
-  anti_join(mascot_strict_ions5, c("query_number", "pep_score")) %>%
-  arrange(desc(pep_score))
+query <- read.mascot("DATA/F011845_strict_ionscutoff5.csv", "query")
+query_choice()
 ```
 ### Confirmation on an example: 33142
 ```{r}
-filter(mascot_strict_ions5, query_number == "33142") %>% select(-(prot_acc:pep_exp_mz))
-filter(query_strict_ions5, query_number == "33142") %>% select(-(pep_var_mod:pep_scan_title))
+filter(mascot, query_number == "33142") %>% select(query_number, pep_score, everything())
+filter(query, query_number == "33142") %>% select(query_number, pep_score, everything())
+```
+
+#Mascot OUTPUT 3
+
+> FILE: DATA\F011845_19-3_BOLDRED.csv*
+
+| Setting                  | State  |
+|--------------------------|:------:|
+|Subset protein families   | ACTIVE |
+|Sameset protein families  | OFF    |
+|Ions score cut-off        | OFF    |
+|Group protein families    | OFF    |
+|Duplicate peptides        | ACTIVE |
+|Require Bold Red          | ACTIVE |
+
+*Red peptides are peptides with score above significance threshold, that is calculated by Mascot based on mass accuracy settings and number of variable modifications.
+
+Bold peptides are the best match for an Accession.*
+
+##Case 1: More than one peptide from the same query (MS/MS scan) in final output
+```{r}
+mascot <- read.mascot("DATA/F011845_BOLDRED.csv")
+query_dupes()
+```
+
+##Case 2: Query result with lower score is picked for mascot peptide table
+```{r}
+query <- read.mascot("DATA/F011845_BOLDRED.csv", "query")
+query_choice()
+```
+### Confirmation on an example: 5306
+```{r}
+filter(mascot, query_number == "5306") %>% select(query_number, pep_score, everything())
+filter(query, query_number == "5306") %>% select(query_number, pep_score, everything())
+```
+
+#Mascot OUTPUT 4
+
+> FILE: DATA\F011845_19-3_boldred_strict.csv*
+
+| Setting                  | State  |
+|--------------------------|:------:|
+|Subset protein families   | OFF |
+|Sameset protein families  | OFF    |
+|Ions score cut-off        | **5**  |
+|Group protein families    | OFF   |
+|Duplicate peptides        | OFF |
+|Require Bold Red          | ACTIVE |
+
+##Case 1: More than one peptide from the same query (MS/MS scan) in final output
+```{r}
+mascot <- read.mascot("DATA/F011845_boldred_strict.csv")
+query_dupes()
+```
+
+##Case 2: Query result with lower score is picked for mascot peptide table
+```{r}
+query <- read.mascot("DATA/F011845_boldred_strict.csv", "query")
+query_choice()
+```
+### Confirmation on an example: 33142
+```{r}
+filter(mascot, query_number == "33142") %>% select(query_number, pep_score, everything())
+filter(query, query_number == "33142") %>% select(query_number, pep_score, everything())
+```
+
+#Mascot OUTPUT 5
+
+> FILE: DATA\F011845_19-3_boldred_strict.csv*
+
+| Setting                  | State  |
+|--------------------------|:------:|
+|Subset protein families   | OFF |
+|Sameset protein families  | OFF    |
+|Ions score cut-off        | **5**  |
+|Group protein families    | OFF   |
+|Duplicate peptides        | OFF |
+|Require Bold Red          | ACTIVE |
+
+##Case 1: More than one peptide from the same query (MS/MS scan) in final output
+```{r}
+mascot <- read.mascot("DATA/F011845_ions10.csv")
+query_dupes()
+```
+
+##Case 2: Query result with lower score is picked for mascot peptide table
+```{r}
+query <- read.mascot("DATA/F011845_ions10.csv", "query")
+query_choice()
 ```
