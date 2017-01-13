@@ -8,24 +8,23 @@ output: html_document
 ```{r}
 library(tidyverse)
 source("R/01.2 - read_mascot.R")
-load(".RData")
 
 query_dupes <- function(mascot_tbl = mascot){
-  mascot %>%
+  mascot_tbl %>%
   group_by(query_number) %>%
   filter(n() > 1) %>%
   arrange(query_number, desc(pep_score)) %>%
   return()
 }
-query_choice <- function(query_tbl = query){
-  query %>%
-  semi_join(mascot, "query_number") %>%
+query_choice <- function(mascot_tbl = mascot, query_tbl = query){
+  query_tbl %>%
+  semi_join(mascot_tbl, "query_number") %>%
   group_by(query_number) %>%
   filter(n() >= 2) %>%
-  filter(sum(!is.na(pep_var_mod_conf)) >= 1) %>%
-  filter(pep_var_mod_conf == max(pep_var_mod_conf, na.rm = T)) %>%
+  filter(sum(!is.na(pep_score)) >= 1) %>%
+  filter(pep_score == max(pep_score, na.rm = T)) %>%
   ungroup() %>%
-  anti_join(mascot, c("query_number", "pep_score")) %>%
+  anti_join(mascot_tbl, c("query_number", "pep_score")) %>%
   arrange(desc(pep_score)) %>%
   return()
 }
