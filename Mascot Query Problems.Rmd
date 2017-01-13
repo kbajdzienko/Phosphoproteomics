@@ -17,7 +17,7 @@ load(".RData")
 
 #Mascot OUTPUT 1
 
-> W:\Krzysztof\EXP\EXP_20_Phosphoproteomics_Data_Analysis\R_pipepline_development\DATA\EXP19_3_PSBD_mascot_peptides_and_query.csv
+> FILE: DATA\EXP19_3_PSBD_mascot_peptides_and_query.csv
 
 | Setting                  | State  |
 |--------------------------|:------:|
@@ -60,7 +60,7 @@ filter(query, query_number == "34440") %>% select(-(pep_var_mod:pep_scan_title))
 
 #Mascot OUTPUT 2
 
-> W:\Krzysztof\EXP\EXP_20_Phosphoproteomics_Data_Analysis\R_pipepline_development\DATA\F011845_19-3_strictexportfilter.csv*
+> FILE: DATA\F011845_19-3_strictexportfilter.csv*
 
 | Setting                  | State  |
 |--------------------------|:------:|
@@ -103,7 +103,7 @@ filter(query_strict, query_number == "30145") %>% select(-(pep_var_mod:pep_scan_
 
 #Mascot OUTPUT 3
 
-> W:\Krzysztof\EXP\EXP_20_Phosphoproteomics_Data_Analysis\R_pipepline_development\DATA\F011845_19-3_strictexportfilter.csv*
+> FILE: DATA\F011845_19-3_strictexportfilter.csv*
 
 | Setting                  | State  |
 |--------------------------|:------:|
