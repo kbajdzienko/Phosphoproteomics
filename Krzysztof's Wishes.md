@@ -15,7 +15,7 @@
 - [ ] for future: import profile for MaxQuant output to PDA workflow
 
 #### FIX:
-- [x] (FIX: was no problem) sitesMerge - different number of ann_IDs in peakData and annIntData - HOW
+- [x] sitesMerge - different number of ann_IDs in peakData and annIntData - (was no problem)
 - [x] ADD check for uniqueness of sequence-accession-mass-score combination for merging df and mascot in make_annID
 - [x] Round Neutral mass in make_annID before joining df and mascot
 
