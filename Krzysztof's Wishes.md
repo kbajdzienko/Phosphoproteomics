@@ -11,7 +11,7 @@
 - [ ] PCA (with loadings)
 - [ ] Volcano plot (p-val/fold change)
 - [ ] Pareto and Auto scaling + intensity profile (like in Metaboanalyst)
-
+- [ ] Reshape the quality check table
 - [ ] for future: import profile for MaxQuant output to PDA workflow
 
 #### FIX:
