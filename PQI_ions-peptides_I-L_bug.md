@@ -1,3 +1,11 @@
+# PQI ions-peptides bug 
+*where isoleucine is swaped with leucine*
+
+
+*This bug is fixed with **cure_IL_NA** function*
+
+
+
 ###Case 1
 
 ####LSGGVAVLK
