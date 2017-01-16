@@ -9,29 +9,31 @@ QC_stat <- function(df) {
   # Phosphorylated proteins
   prot.phos.num <-
     filter(df$peakData, grepl("Phosp", Modifications)) %>%
-    summarize(PhosphoProteins = n_distinct(Accession)) %>%
+    summarize('(P)-proteins' = n_distinct(Accession)) %>%
     '/'(prot.num/100) %>%
-    mutate_all(funs(paste(round(., digits = 1), "%")))
+    mutate_all(funs(paste0(round(., digits = 1), "%")))
 
   # All identified peptides
-  pep.num <- summarize(mascot, Peptides = n_distinct(Sequence, Modifications))
+  pep.num <- summarize(df$peakData, Peptides = n_distinct(Sequence, Modifications))
 
   # Phosphorylated peptides
   pep.phos.num <-
-    filter(mascot, grepl("Phosp", pep_var_mod)) %>%
+    filter(df$peakData, grepl("Phosp", Modifications)) %>%
     summarize('(P)-peptides' = n_distinct(Sequence, Modifications)) %>%
     '/'(pep.num/100) %>%
-    mutate_all(funs(paste(round(., digits = 1), "%")))
+    mutate_all(funs(paste0(round(., digits = 1), "%")))
 
   # Identified phosphorylated sites
     phos.sites <-
-      sitesMerge(df)$annIntData %>%
-      summarize(Proteins = n_distinct(ann_ID))
+      sitesMerge(df)$annData %>%
+      group_by(Accession) %>%
+      summarize(n_sites = n()) %>%
+      summarize('(P)-Sites' = sum(n_sites), 'Sites/protein' = sum(n_sites)/n())
 
   return(bind_cols(prot.num,
                    prot.phos.num,
                    pep.num,
-                   pep.phos.num
+                   pep.phos.num,
                    phos.sites))
 }
 

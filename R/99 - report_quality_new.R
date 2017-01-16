@@ -10,7 +10,7 @@ QC_stat_mascot <- function(mascot_file) {
   # Phosphorylated proteins
   prot.phos.num <-
     filter(mascot, grepl("Phosp", pep_var_mod)) %>%
-    summarize('(P)-Proteins, %' = n_distinct(prot_acc)) %>%
+    summarize('(P)-proteins, %' = n_distinct(prot_acc)) %>%
     '/'(prot.num/100) %>%
     mutate_all(funs(paste(round(., digits = 1), "%")))
 
@@ -22,7 +22,7 @@ QC_stat_mascot <- function(mascot_file) {
     filter(mascot, grepl("Phosp", pep_var_mod)) %>%
     summarize('(P)-peptides' = n_distinct(pep_seq, pep_var_mod)) %>%
     '/'(pep.num/100) %>%
-    mutate_all(funs(paste(round(., digits = 1), "%")))
+    mutate_all(funs(paste0(round(., digits = 1), "%")))
 
   # Identified unique proteins within each run
   prot.per.run <-
@@ -30,7 +30,10 @@ QC_stat_mascot <- function(mascot_file) {
     mutate(sample_ID = sapply(strsplit(pep_scan_title, "\\."), '[', 1)) %>%
     distinct(sample_ID, prot_acc) %>%
     count(sample_ID) %>%
-    summarize('Proteins/run, mean \u00B1 CV' = paste0(round(mean(n)), " \u00B1 ", round(100*sd(n)/mean(n), digits = 1), "%"))
+    summarize('Proteins/run, mean \u00B1 CV' = paste0(round(mean(n)),
+                                                      " \u00B1 ",
+                                                      round(100*sd(n)/mean(n), digits = 1),
+                                                      "%"))
 
   # Function to count number of phosphorilation sites
   countSites <- function(pep_start, pep_pos) {
