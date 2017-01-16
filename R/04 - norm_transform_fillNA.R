@@ -13,7 +13,7 @@ normScale <- function(df) {
   df$intData <-
     df$intData %>%
     group_by(peak_ID) %>%
-    mutate(intensity = (intensity - mean(intensity))/sd(intensity)) %>%
+    mutate(intensity = (intensity - mean(intensity, na.rm = T))/sd(intensity, na.rm = T)) %>%
     ungroup()
   return(df)
 }
