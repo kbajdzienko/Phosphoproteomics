@@ -9,38 +9,30 @@ QC_stat <- function(df) {
   # Phosphorylated proteins
   prot.phos.num <-
     filter(df$peakData, grepl("Phosp", Modifications)) %>%
-    summarize(PhosphoProteins = n_distinct(Accession))
+    summarize(PhosphoProteins = n_distinct(Accession)) %>%
+    '/'(prot.num/100) %>%
+    mutate_all(funs(paste(round(., digits = 1), "%")))
 
-  # # Identified unique proteins within each run -- CV
-  # prot.per.run.cv <-
-  #   df %>%
-  #   mutate(sample_ID = sapply(strsplit(pep_scan_title, "\\."), '[', 1)) %>%
-  #   distinct(sample_ID, prot_acc) %>%
-  #   count(sample_ID) %>%
-  #   summarize(UniqueProteinsCV = sd(n)/mean(n))
+  # All identified peptides
+  pep.num <- summarize(mascot, Peptides = n_distinct(Sequence, Modifications))
+
+  # Phosphorylated peptides
+  pep.phos.num <-
+    filter(mascot, grepl("Phosp", pep_var_mod)) %>%
+    summarize('(P)-peptides' = n_distinct(Sequence, Modifications)) %>%
+    '/'(pep.num/100) %>%
+    mutate_all(funs(paste(round(., digits = 1), "%")))
 
   # Identified phosphorylated sites
-  if (is.null(df$annIntData)) {
     phos.sites <-
       sitesMerge(df)$annIntData %>%
       summarize(Proteins = n_distinct(ann_ID))
-  } else {
-    phos.sites <-
-      df$annIntData %>%
-      summarize(PhosphoSites = n_distinct(ann_ID))
-  }
-
-  # Proportion: non-phosphorylated / phosphorylated peptidestable(df$peakData$pep_miss)
-  pep.phos.ratio <-
-    df$peakData %>%
-    distinct(Sequence, Modifications) %>%
-    summarize('Nonphosph/Phosph' = sum(!grepl("Phosph", Modifications))/sum(grepl("Phosph", Modifications)))
 
   return(bind_cols(prot.num,
                    prot.phos.num,
-                   #prot.per.run.cv,
-                   phos.sites,
-                   pep.phos.ratio))
+                   pep.num,
+                   pep.phos.num
+                   phos.sites))
 }
 
 # Plot several quality control histograms
