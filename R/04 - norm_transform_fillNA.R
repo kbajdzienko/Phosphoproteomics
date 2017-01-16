@@ -9,11 +9,15 @@ normMedian <- function(df) {
 }
 
 # Mean-centering and scaling
-normScale <- function(df) {
+normScale <- function(df, method = "auto") {
+  match.arg(method, c("auto", "pareto"))
+  auto <- function(x) (x - mean(x, na.rm = T))/sd(x, na.rm = T)
+  pareto <- function(x) (x - mean(x, na.rm = T))/sqrt(sd(x, na.rm = T))
+
   df$intData <-
     df$intData %>%
     group_by(peak_ID) %>%
-    mutate(intensity = (intensity - mean(intensity, na.rm = T))/sd(intensity, na.rm = T)) %>%
+    mutate_at(vars(intensity), method) %>%
     ungroup()
   return(df)
 }
