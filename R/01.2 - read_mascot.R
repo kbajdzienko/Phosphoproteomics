@@ -47,7 +47,8 @@ read.mascot <- function(mascot_file, data = "pep") {
       mutate_at(vars(prot_score:pep_miss), as.integer) %>%
       mutate_at(vars(pep_exp_mz:pep_score), as.numeric) %>%
       mutate_at(vars(pep_isbold, pep_isunique), as.logical) %>%
-      dplyr::rename(query_number = pep_query)
+      dplyr::rename(query_number = pep_query) %>%
+      select(query_number, pep_score, pep_seq, prot_acc, everything())
 
   } else if (data == "query") {
     mascot <-
