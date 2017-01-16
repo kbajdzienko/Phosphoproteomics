@@ -36,7 +36,7 @@ QC_stat_mascot <- function(mascot_file) {
   countSites <- function(pep_start, pep_pos) {
     sites <-
       strsplit(pep_pos, "") %>%
-      sapply(function(x) which(x == 3)) %>%
+      sapply(function(x) which(x %in% 3:4)) %>%
       mapply(function(start, pos) start + pos - 3, pep_start, .) %>%
       Reduce(union, .) %>%
       length()
