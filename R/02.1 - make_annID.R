@@ -68,7 +68,7 @@ cure_IL_NA <- function (miss_peakData, mascot) {
 
   # Instead of sequence form regular expression with optional I/L positions
   IL_seq$ILSequence <-
-    strsplit(IL_seq_na$Sequence, "") %>%
+    strsplit(IL_seq$Sequence, "") %>%
     lapply(gsub, pattern = "[LI]", replacement = "[LI]") %>%
     sapply(function(x) paste0(c("^", x, "$"), collapse = ""))
 
