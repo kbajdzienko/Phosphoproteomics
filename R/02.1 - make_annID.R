@@ -63,12 +63,14 @@ make_annID <- function(df, mascot_file) {
 # Function, adding to mascot missing Sequence/Accessions in case of I/L bug
 cure_IL_NA <- function (miss_peakData, mascot) {
 
+  if (nrow(miss_peakData) == 0) return(miss_peakData)
+
   # Get sequences/accessions with no match
   IL_seq <- distinct(miss_peakData, Sequence, Accession)
 
   # Instead of sequence form regular expression with optional I/L positions
   IL_seq$ILSequence <-
-    strsplit(IL_seq_na$Sequence, "") %>%
+    strsplit(IL_seq$Sequence, "") %>%
     lapply(gsub, pattern = "[LI]", replacement = "[LI]") %>%
     sapply(function(x) paste0(c("^", x, "$"), collapse = ""))
 
