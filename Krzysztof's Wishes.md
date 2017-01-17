@@ -6,14 +6,15 @@
 - [x] distribution (frequency, not density) of single, double, triple and quadruple phosphorylated peptides (taken from df)
 - [x] histograms -> rewrite from counts to density
 - [x] Profile plot -- all peaks by Accession.
-
-- [ ] plots: clustering of dynamic phosphorylation profiles
-- [ ] plots: Functional Categories of Regulated Phosphoproteins (please check F1000 :Fig3 and Fig4, Global, in vivo, and site-specific phosphorylation dynamics in signaling networks.)
-- [ ] PCA (with loadings)
-- [ ] Volcano plot (p-val/fold change)
 - [x] Pareto and Auto scaling + intensity profile (like in Metaboanalyst)
 - [x] Reshape the quality check table
-- [ ] for future: import profile for MaxQuant output to PDA workflow
+
+- [ ] plots: fuzzy clustering of dynamic phosphorylation profiles
+- [ ] plot: PCA (with loadings)
+- [ ] plot: Volcano plot (p-val/fold change)
+- [x] plot: ann_ID intensity profile, choice of which ann_ID are plotted
+- [x] ions table -> join All_Accessions to peakData
+- [ ] for future: import function for MaxQuant output
 
 #### FIX:
 - [x] sitesMerge - different number of ann_IDs in peakData and annIntData - (was no problem)
@@ -22,7 +23,6 @@
 
 #### Suggestions:
 - [ ] Missing values statistics
-
-#### Disposed Wishes:
-- [ ] From tidy df -> identified unique proteins within each run -- median and CV
-- [ ] calculate mascot delta score and normalized mascot delta score
+- [x] Improve read.mascot performance for big files
+- [x] Improve make_conf performance
+- [ ] Simplify filter_unique_peptides since Accessions in All_accessions are arranged in the same way  

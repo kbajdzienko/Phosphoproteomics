@@ -16,14 +16,15 @@ source("R/03 - filter_unique_peptides.R")
 source("R/04 - norm_transform_fillNA.R")
 source("R/05 - filter_NA_filter_score.R")
 source("R/06 - phos_sites_merging.R")
+
 source("R/99 - report_PQI.R")
-source("R/99 - report_quality_new.R")
-source("R/99 - report_quality_DF.R")
-source("R/99 - report_plot_CV_hist.R")
-source("R/99 - report_abundance_distribution.R")
-source("R/99 - report_protein_profile.R")
-source("R/99 - report_mass_accuracy.R")
-source("R/99 - report_plot_norm_summary.R")
+source("R/99 - report_plot_QC_mascot.R")
+source("R/99 - report_plot_QC_df.R")
+source("R/99 - plot_CV_hist.R")
+source("R/99 - plot_abundance_distribution.R")
+source("R/99 - plot_protein_profile.R")
+source("R/99 - plot_mass_accuracy.R")
+source("R/99 - plot_norm_summary.R")
 
 zero.to.na <- function(x) {
   x[x==0] <- NA
