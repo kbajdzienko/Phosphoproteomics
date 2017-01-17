@@ -31,11 +31,11 @@ dtt_clean <- function(
   
   df <- normMedian(df)
   
-  df <- normScale(df, method = "auto")
-  
   df <- fillNA(df, method = NAimputation)
   
   df <- logTransform(df, base = base) 
+  
+  df <- normScale(df, method = "auto")
   
   df <- sitesMerge(df)
   
