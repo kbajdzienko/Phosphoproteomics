@@ -35,7 +35,7 @@ QC_stat_mascot <- function(mascot_file) {
                                                       round(100*sd(n)/mean(n), digits = 1),
                                                       "%"))
 
-  # Function to count number of phosphorilation sites
+  # Function to count number of phosphorylation sites
   countSites <- function(pep_start, pep_pos) {
     sites <-
       strsplit(pep_pos, "") %>%
@@ -91,7 +91,7 @@ plot_QC_hist_mascot <- function(mascot_file, score = 0) {
       stringr::str_count("3")
     barplot(table(phosh.sites.counts)/length(phosh.sites.counts),
             space = 0,
-            main = "Phosphorilation sites per peptide",
+            main = "Phosphorylation sites per peptide",
             col = "white",
             ylab = "Frequency")
 
@@ -108,7 +108,7 @@ plot_QC_hist_mascot <- function(mascot_file, score = 0) {
 
     # Histogram: Phos peptide score distribution
     hist(as.numeric(mascot$pep_score),
-         main = "Score distribution",
+         main = "Peptide score distribution",
          xlab = NULL,
          breaks = seq(0,max(as.numeric(mascot$pep_score)+10), by = 10))
 
