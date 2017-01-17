@@ -24,11 +24,11 @@ QC_stat <- function(df) {
     mutate_all(funs(paste0(round(., digits = 1), "%")))
 
   # Identified phosphorylated sites
-    phos.sites <-
-      sitesMerge(df)$annData %>%
-      group_by(Accession) %>%
-      summarize(n_sites = n()) %>%
-      summarize('(P)-Sites' = sum(n_sites), 'Sites/protein' = sum(n_sites)/n())
+  phos.sites <-
+    sitesMerge(df)$annData %>%
+    group_by(Accession) %>%
+    summarize(n_sites = n()) %>%
+    summarize('(P)-Sites' = sum(n_sites), 'Sites/protein' = sum(n_sites)/n())
 
   return(bind_cols(prot.num,
                    prot.phos.num,
