@@ -16,5 +16,12 @@ read.ions <- function(ions_file) {
                "Accession", "All_accessions")) %>%
     mutate_at(vars(RT, mz:Score), as.numeric) %>%
     mutate_at(vars(ion_ID, Charge), as.integer)
+
+  ions$All_accessions <-
+    ions$All_accessions %>%
+    strsplit(";") %>%
+    sapply(sort) %>%
+    sapply(paste, collapse = ";")
+
   return(ions)
 }
