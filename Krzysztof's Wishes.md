@@ -25,3 +25,4 @@
 - [ ] Missing values statistics
 - [x] Improve read.mascot performance for big files
 - [x] Improve make_conf performance
+- [ ] Simplify filter_unique_peptides since Accessions in All_accessions are arranged in the same way  
