@@ -80,7 +80,7 @@ tidy_PQI <- function(file, abundance = "Raw") {
   # Peak information table
   peakData <-
     df %>%
-    select(1, 6:12) %>%
+    select(1, 4, 6:12) %>%
     setNames(.[3, ]) %>%
     slice(-(1:3)) %>%
     distinct() %>%
