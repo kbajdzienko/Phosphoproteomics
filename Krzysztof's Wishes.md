@@ -23,7 +23,5 @@
 
 #### Suggestions:
 - [ ] Missing values statistics
-
-#### Disposed Wishes:
-- [ ] From tidy df -> identified unique proteins within each run -- median and CV
-- [ ] calculate mascot delta score and normalized mascot delta score
+- [x] Improve read.mascot performance for big files
+- [x] Improve make_conf performance
