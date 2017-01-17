@@ -6,15 +6,15 @@
 - [x] distribution (frequency, not density) of single, double, triple and quadruple phosphorylated peptides (taken from df)
 - [x] histograms -> rewrite from counts to density
 - [x] Profile plot -- all peaks by Accession.
-
-- [ ] plots: fuzzy clustering of dynamic phosphorylation profiles
-- [ ] PCA (with loadings)
-- [ ] Volcano plot (p-val/fold change)
 - [x] Pareto and Auto scaling + intensity profile (like in Metaboanalyst)
 - [x] Reshape the quality check table
-- [ ] for future: import function for MaxQuant output
+
+- [ ] plots: fuzzy clustering of dynamic phosphorylation profiles
+- [ ] plot: PCA (with loadings)
+- [ ] plot: Volcano plot (p-val/fold change)
 - [ ] plot: ann_ID intensity profile, choice of which ann_ID are plotted
-- [ ] ions table - join All_Accessions to peakData
+- [ ] ions table -> join All_Accessions to peakData
+- [ ] for future: import function for MaxQuant output
 
 #### FIX:
 - [x] sitesMerge - different number of ann_IDs in peakData and annIntData - (was no problem)
