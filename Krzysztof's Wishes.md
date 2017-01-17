@@ -13,7 +13,7 @@
 - [ ] plot: PCA (with loadings)
 - [ ] plot: Volcano plot (p-val/fold change)
 - [ ] plot: ann_ID intensity profile, choice of which ann_ID are plotted
-- [ ] ions table -> join All_Accessions to peakData
+- [x] ions table -> join All_Accessions to peakData
 - [ ] for future: import function for MaxQuant output
 
 #### FIX:
