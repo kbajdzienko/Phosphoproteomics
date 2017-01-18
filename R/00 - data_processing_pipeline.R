@@ -21,22 +21,20 @@ dtt_import <- function(df, peptide_file, mascot_file,
 dtt_clean <- function(
                 df,  
                 ions_file, 
-                NA_allowed = 0.5, 
-                NAimputation = "ppca", 
-                base = 2) {
+                NAimputation = "ppca",
+                score = 29
+                ) {
   
-  df <- filter_pep_unique(df, ions_file = ions_file)
+  filter_phos_conf(df, score_threshold = 70)
   
-  df <- filter_NA(df, threshold = NA_allowed)  
+  filter_score(df, score_threshold = score)
+  
+  df <- filter_NA(df, threshold = 0.7)  
   
   df <- normMedian(df)
   
   df <- fillNA(df, method = NAimputation)
-  
-  df <- logTransform(df, base = base) 
-  
-  df <- normScale(df, method = "auto")
-  
+
   df <- sitesMerge(df)
   
   return(df)
