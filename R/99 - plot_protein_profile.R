@@ -4,9 +4,13 @@
 
 plot_acc <- function(df, protein) {
   require(ggplot2)
-  y.limup <- ceiling(max(log2(df$intData$intensity), na.rm=TRUE) + 3)
-  y.limdown <- -1
-  tempGroupName <- df$sampleData # unique(datafeature[, c("GROUP_ORIGINAL", "RUN")])
+
+  # Log transform if not
+  if (!is.log(df$intData$intensity)) df <- logTransform(df)
+
+  y.limup <- ceiling(max(df$intData$intensity, na.rm = TRUE) + 3)
+  y.limdown <- floor(min(-1, df$intData$intensity))
+  tempGroupName <- df$sampleData
   groupAxis <- as.numeric(xtabs(~group, tempGroupName))
   cumGroupAxis <- cumsum(groupAxis)
   lineNameAxis <- cumGroupAxis[-nlevels(as.factor(df$sampleData$group))]
@@ -14,7 +18,7 @@ plot_acc <- function(df, protein) {
                           intensity = rep(y.limup - 1, length(groupAxis)),
                           Name = levels(as.factor(df$sampleData$group)))
   data <-
-    logTransform(df)$intData %>%
+    df$intData %>%
     left_join(df$sampleData) %>%
     left_join(df$peakData) %>%
     filter(Accession == protein)

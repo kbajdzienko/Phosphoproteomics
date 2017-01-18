@@ -2,8 +2,12 @@
 
 plot_int_profile <- function(df) {
   require(ggplot2)
-  y.limup <- ceiling(max(log2(df$intData$intensity), na.rm=TRUE) + 3)
-  y.limdown <- -1
+
+  # Log transform if not
+  if (!is.log(df$intData$intensity)) df <- logTransform(df)
+
+  y.limup <- ceiling(max(df$intData$intensity, na.rm = TRUE) + 3)
+  y.limdown <- floor(min(-1, df$intData$intensity))
 
   tempGroupName <- df$sampleData # unique(datafeature[, c("GROUP_ORIGINAL", "RUN")])
   groupAxis <- as.numeric(xtabs(~group, tempGroupName))
@@ -19,7 +23,7 @@ plot_int_profile <- function(df) {
 
   ptemp <-
     ggplot(aes_string(x = 'sample_ID', y='intensity'),
-           data = mutate(df$intData, intensity = log2(intensity))) +
+           data = df$intData) +
     facet_grid(~LABEL) +
     geom_boxplot(aes_string(fill = 'LABEL'), outlier.shape = 1, outlier.size = 1.5) +
     scale_fill_manual(values = label.color, guide = "none")+

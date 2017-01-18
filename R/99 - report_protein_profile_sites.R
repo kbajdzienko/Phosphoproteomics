@@ -2,8 +2,12 @@
 
 plot_acc_ann <- function(df, protein) {
   require(ggplot2)
-  y.limup <- ceiling(max(log2(df$annIntData$intensity), na.rm=TRUE) + 3)
-  y.limdown <- -1
+
+  # Log transform if not
+  if (!is.log(df$intData$intensity)) df <- logTransform(df)
+
+  y.limup <- ceiling(max(df$annIntData$intensity, na.rm = TRUE) + 3)
+  y.limdown <- floor(min(-1, df$annIntData$intensity))
   tempGroupName <- df$sampleData # unique(datafeature[, c("GROUP_ORIGINAL", "RUN")])
   groupAxis <- as.numeric(xtabs(~group, tempGroupName))
   cumGroupAxis <- cumsum(groupAxis)
@@ -13,13 +17,16 @@ plot_acc_ann <- function(df, protein) {
                           Name = levels(as.factor(df$sampleData$group)))
   data <-
     df$annIntData %>%
-    mutate(intensity = log2(intensity)) %>%
     left_join(df$sampleData) %>%
     left_join(df$annData) %>%
     filter(Accession == protein) %>%
     mutate(ann_ID = gsub("^[[:alnum:]]+.*[[:alnum:]]*_", "", ann_ID)) %>%
     mutate(Position = as.integer(gsub("[[:alpha:]]+", "", ann_ID))) %>%
     arrange(Position)
+
+  # Reorder levels of factor ann_ID by position number for plot legend
+  data$ann_ID <- reorder(data$ann_ID, data$Position)
+
   # data.sum <-
   #   data %>%
   #   group_by(sample_ID) %>%

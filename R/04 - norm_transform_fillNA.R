@@ -43,25 +43,33 @@ fillNA <- function(df, method = "ppca") {
     warning("No NA detected")
     return(df)
   }
-  intMatrix <-
-    intMatrix(df) %>%
-    t() %>%
-    log10()
+
+  intMatrix <- t(intMatrix(df))
+  if (!is.log(intMatrix)) intMatrix <- log10(intMatrix)
 
   intMatrix[is.na(intMatrix)] <-
     pcaMethods::completeObs(
       pcaMethods::pca(intMatrix, center = T, method = method))[is.na(intMatrix)]
 
-  df$intData <-
-    10^intMatrix %>%
-    t() %>%
-    intData()
+  if (!is.log(intMatrix(df))) intMatrix <- 10^intMatrix
+
+  df$intData <- intData(t(intMatrix))
 
   return(df)
 }
 
 # Log-transform data
 logTransform <- function(df, base = 2) {
+  if (any(df$intData$intensity < 0)) {
+    warning("Negative values detected.\nData are probably already log-transformed or scaled.\nNo transformation applied.")
+    return(df)
+  }
+  if (is.log(df$intData$intensity)) {
+    warning("Data are already log-transformed, no transformation applied.")
+    return(df)
+  }
   df$intData <- mutate(df$intData, intensity = log(intensity, base = base))
+  if (!is.null(df$annData))
+    df$annIntData <- mutate(df$annIntData, intensity = log(intensity, base = base))
   return(df)
 }
