@@ -7,23 +7,23 @@ plot_norm_summary <- function(df.pre, df.post, mode) {
   layout(matrix(c(1,1,1,2,3,3,3,4), 4, 2, byrow = FALSE))
 
   # fig 1
-  op <- par(mar = c(5,7,4,0), xaxt = "s");
+  op <- par(mar = c(5,7,4,0), xaxt = "s", cex.axis = 0.75);
   plot_boxint(df.pre, mode)
   mtext("Before Normalization",3, 1);
 
   # fig 2
-  op <- par(mar = c(7,7,0,0), xaxt = "s");
+  op <- par(mar = c(7,7,0,0), xaxt = "s", cex.axis = 0.75);
   plot_density(df.pre, mode)
   mtext("Density", 2, 5);
   mtext("Intensity", 1, 5);
 
   # fig 3
-  op <- par(mar = c(5,7,4,2), xaxt = "s");
+  op <- par(mar = c(5,7,4,2), xaxt = "s", cex.axis = 0.75);
   plot_boxint(df.post, mode)
   mtext("After Normalization", 3, 1);
 
   # fig 4
-  op <- par(mar = c(7,7,0,2), xaxt = "s");
+  op <- par(mar = c(7,7,0,2), xaxt = "s", cex.axis = 0.75);
   plot_density(df.post, mode)
   mtext("Normalized Intensity", 1, 5);
 
@@ -33,6 +33,7 @@ plot_norm_summary <- function(df.pre, df.post, mode) {
 # Plot density plot
 plot_density <- function(df, mode) {
   match.arg(mode, c("peak", "sample"))
+  if (!is.log(df$intData$intensity)) df <- logTransform(df)
   df$intData %>%
     group_by_(paste0(mode, "_ID")) %>%
     summarize(intensity = mean(intensity, na.rm = TRUE)) %>%
@@ -43,12 +44,12 @@ plot_density <- function(df, mode) {
          main = "", xlab = "", ylab = "")
 }
 
-# Plot boxplot of random subset 40 peaks/samples
+# Plot boxplot of random subset 30 peaks/samples
 # since there may be too many compounds/samples
 
 plot_boxint <- function(df, mode) {
   match.arg(mode, c("peak", "sample"))
-
+  if (!is.log(df$intData$intensity)) df <- logTransform(df)
   if (mode == "peak") {
     intMatrix <- t(intMatrix(df))
     # Use for boxplots only peaks without NAs
@@ -62,7 +63,7 @@ plot_boxint <- function(df, mode) {
     names.vec <- colnames(intMatrix)
   }
 
-  size <- min(40, length(names.vec))
+  size <- min(28, length(names.vec))
   names.vec <- sample(names.vec, size = size, replace = FALSE)
 
   intMatrix %>%
