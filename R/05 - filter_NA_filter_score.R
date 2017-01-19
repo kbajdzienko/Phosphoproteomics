@@ -33,3 +33,18 @@ filter_score <- function(df, score_threshold = 5) {
   df$intData <- anti_join(df$intData, shitpeaks)
   return(df)
 }
+
+# Filter peaks with MD score less than the set threshold
+#MD score refers to confidence of phosphorylation site arrangment
+
+filter_phos_conf <- function(df, score_threshold = 5) {
+  
+  shitpeaks <-
+    df$peakData %>%
+    filter(pep_var_mod_conf < score_threshold) %>%
+    select(peak_ID)
+  
+  df$peakData <- anti_join(df$peakData, shitpeaks)
+  df$intData <- anti_join(df$intData, shitpeaks)
+  return(df)
+}

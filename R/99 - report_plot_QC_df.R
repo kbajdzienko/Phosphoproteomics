@@ -80,9 +80,11 @@ plot_QC_hist <- function(df) {
 
   # Histogram: Phos peptide score distribution
   hist(as.numeric(df$peakData$Score),
-       main = "Score distribution",
+       main = "Peptide score distribution",
        xlab = NULL,
-       breaks = seq(0,max(as.numeric(df$peakData$Score)+10), by = 10))
+       breaks = seq(0,max(as.numeric(df$peakData$Score)+10), by = 10),
+       xaxt = 'n')
+      axis(side=1, at=seq(0,max(df$peakData$Score),by=20), labels=seq(0,max(df$peakData$Score),by=20))
 
   par(mfrow = c(1, 1))
 }

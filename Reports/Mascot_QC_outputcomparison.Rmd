@@ -1,0 +1,95 @@
+---
+title: "Quality Control of different mascot outputs"
+output: html_document
+---
+
+##Setup
+```{r}
+library(plyr)
+library(tidyverse)
+source("R/00 - sources_utility.R")
+```
+
+*All R functions, scripts and data used can be found under*
+*https://github.com/kbajdzienko/Phosphoproteomics*
+
+*All mascot CSV files are stored in DATA/DATA_F011845.zip*
+
+
+#Mascot OUTPUT 1
+
+> FILE: F011845.csv
+
+| Setting                  | Status  |
+|--------------------------|:------:|
+|Subset protein families   | ACTIVE |
+|Sameset protein families  | OFF    |
+|Ions score cut-off        | OFF    |
+|Group protein families    | ACTIVE |
+|Show duplicate peptides        | ACTIVE |
+|Require Bold Red          | OFF    |
+
+*This is default Mascot OUTPUT we use (setup by server administrator)*
+
+```{r}
+QC_stat_mascot("DATA/F011845.csv")
+
+plot_QC_hist_mascot("DATA/F011845.csv")
+```
+
+#Mascot OUTPUT 2
+
+> FILE: F011845_ions10.csv*
+
+| Setting                  | Status  |
+|--------------------------|:------:|
+|Subset protein families   | ACTIVE |
+|Sameset protein families  | OFF    |
+|Ions score cut-off        | **10** |
+|Group protein families    | ACTIVE |
+|Show duplicate peptides    | ACTIVE |
+|Require Bold Red          | OFF    |
+
+```{r}
+QC_stat_mascot("DATA/F011845_ions10.csv")
+
+plot_QC_hist_mascot("DATA/F011845_ions10.csv")
+```
+
+#Mascot OUTPUT 3
+
+> FILE: F011845_br.csv*
+
+| Setting                  | Status  |
+|--------------------------|:------:|
+|Subset protein families   | ACTIVE |
+|Sameset protein families  | OFF    |
+|Ions score cut-off        | OFF    |
+|Group protein families    | OFF    |
+|Show duplicate peptides        | ACTIVE |
+|Require Bold Red          | ACTIVE |
+
+```{r}
+QC_stat_mascot("DATA/F011845_br.csv")
+
+plot_QC_hist_mascot("DATA/F011845_br.csv")
+```
+
+#Mascot OUTPUT 4
+
+> FILE: F011845_br_ions10_ndp_nspf.csv*
+
+| Setting                  | Status  |
+|--------------------------|:------:|
+|Subset protein families   | OFF |
+|Sameset protein families  | OFF    |
+|Ions score cut-off        | **10**  |
+|Group protein families    | OFF   |
+|Show duplicate peptides        | OFF |
+|Require Bold Red          | ACTIVE |
+
+```{r}
+QC_stat_mascot("DATA/F011845_br_ions10_ndp_nspf.csv")
+
+plot_QC_hist_mascot("DATA/F011845_br_ions10_ndp_nspf.csv")
+```
