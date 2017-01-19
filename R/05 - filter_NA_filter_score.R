@@ -11,6 +11,7 @@ filter_NA <- function(df, threshold = 0.5) {
     summarize(NA_ratio = sum(is.na(intensity))/n()) %>%
     group_by(peak_ID) %>%
     filter(!any(NA_ratio < threshold)) %>%
+    ungroup() %>%
     select(peak_ID) %>%
     distinct()
 

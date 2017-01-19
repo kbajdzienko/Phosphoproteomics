@@ -60,7 +60,7 @@ fillNA <- function(df, method = "ppca") {
 
 # Log-transform data
 logTransform <- function(df, base = 2) {
-  if (any(df$intData$intensity < 0)) {
+  if (any(df$intData$intensity < 0, na.rm = T)) {
     warning("Negative values detected.\nData are probably already log-transformed or scaled.\nNo transformation applied.")
     return(df)
   }
