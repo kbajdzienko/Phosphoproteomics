@@ -42,4 +42,4 @@ dupl <- function(x) duplicated(x) | duplicated(x, fromLast = T)
 
 # Check if data are log-transformed
 # (should work for MS data, for bases >2 for sure)
-is.log <- function(intensity) all(intensity < 1000)
+is.log <- function(intensity) all(intensity < 1000, na.rm = T)
