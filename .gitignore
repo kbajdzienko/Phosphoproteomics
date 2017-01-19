@@ -18,3 +18,5 @@ exp16_starvation_peptides_FDRonly.csv
 exp16_sugar_mascot.csv
 exp16_sugar_peptides_FDRonly.csv
 "exp19-3 for MDscore testing(no subset proteins).csv"
+Mascot_QC_outputcomparison.html
+Mascot_Query_Problems.html
