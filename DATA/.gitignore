@@ -1,10 +1,16 @@
+exp16_peptides_phos.csv
 EXP19_3_PSBD_mascot_peptides_and_query.csv
-F011993.xml
-exp16_mascot_pep&query.csv
 F011845.csv
 F011845_BOLDRED.csv
 F011845_boldred_strict.csv
 F011845_ions10.csv
+exp16_mascot.csv
+exp16_mascot_pep&query.csv
+exp16_uniprot.xlsx
+.~lock.EXP19_3_PSBD_mascot_pep&query.csv#
+.~lock.EXP19_3_PSBD_mascot_peptides_and_query.csv#
+.~lock.exp19-3 peptide ions.csv#
+F011993.xml
 exp16_starvation_mascot.csv
 exp16_starvation_peptides_FDRonly.csv
 exp16_sugar_peptides_FDRonly.csv
