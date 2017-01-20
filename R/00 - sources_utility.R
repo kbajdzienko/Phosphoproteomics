@@ -33,10 +33,15 @@ zero.to.na <- function(x) {
   x[x==0] <- NA
   return(x)
 }
+# Convert NAs to zeros
+na.to.zero <- function(x) {
+  x[is.na(x)] <- 0
+  return(x)
+}
 
 # Function returning TRUE for elements repeating more than once
 dupl <- function(x) duplicated(x) | duplicated(x, fromLast = T)
 
 # Check if data are log-transformed
 # (should work for MS data, for bases >2 for sure)
-is.log <- function(intensity) all(intensity < 1000)
+is.log <- function(intensity) all(intensity < 1000, na.rm = T)

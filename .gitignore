@@ -4,12 +4,21 @@
 .RData_conflict-20161209-203614
 .Rhistory_conflict-20161211-191237
 Thumbs.db
-"krzysztof's mess.R"
 Phosphoproteomics.Rproj
 krzysztof's mess.R
-MascotQueryProblems.html
-Mascot_QC_outputcomparison.html
 PQI_ions-peptides_I-L_bug.html
 Playground.Rmd
 Playground.docx
 Playground.html
+"QI QC Metrics Report.pdf"
+EXP16 - starvation
+CV, score and NA filtering
+QI QC Metrics Report.pdf
+CV.pdf
+exp16_starvation_mascot.csv
+exp16_starvation_peptides_FDRonly.csv
+exp16_sugar_mascot.csv
+exp16_sugar_peptides_FDRonly.csv
+"exp19-3 for MDscore testing(no subset proteins).csv"
+Mascot_QC_outputcomparison.html
+Mascot_Query_Problems.html

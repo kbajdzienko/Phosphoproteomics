@@ -26,6 +26,7 @@ QC_stat <- function(df) {
   # Identified phosphorylated sites
   phos.sites <-
     sitesMerge(df)$annData %>%
+    filter(grepl("_[STY]", ann_ID)) %>%
     group_by(Accession) %>%
     summarize(n_sites = n()) %>%
     summarize('(P)-Sites' = sum(n_sites), 'Sites/protein' = sum(n_sites)/n())
@@ -46,6 +47,7 @@ plot_QC_hist <- function(df) {
   pep.miss <-
     df$peakData %>%
     distinct(Sequence, pep_miss) %>%
+    filter(!is.na(pep_miss)) %>%
     .$pep_miss
   barplot(table(pep.miss)/length(pep.miss),
           space = 0,

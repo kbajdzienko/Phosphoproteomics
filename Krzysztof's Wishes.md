@@ -10,7 +10,7 @@
 - [x] Reshape the quality check table
 
 - [ ] plots: fuzzy clustering of dynamic phosphorylation profiles
-- [ ] plot: PCA (with loadings)
+- [x] plot: PCA (with loadings)
 - [ ] plot: Volcano plot (p-val/fold change)
 - [x] plot: ann_ID intensity profile, choice of which ann_ID are plotted
 - [x] ions table -> join All_Accessions to peakData
