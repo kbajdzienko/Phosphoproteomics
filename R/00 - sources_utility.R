@@ -12,11 +12,11 @@ source("R/01.3 - intData_formats.R")
 source("R/01.4 - read_ions.R")
 source("R/02.1 - make_annID.R")
 source("R/02.2 - make_conf.R")
+source("R/02.3 - make_all_acc.R")
 source("R/03 - filter_unique_peptides.R")
 source("R/04 - norm_transform_fillNA.R")
 source("R/05 - filter_NA_filter_score.R")
 source("R/06 - phos_sites_merging.R")
-
 source("R/99 - report_PQI.R")
 source("R/99 - report_plot_QC_mascot.R")
 source("R/99 - report_plot_QC_df.R")
@@ -25,6 +25,8 @@ source("R/99 - plot_abundance_distribution.R")
 source("R/99 - plot_protein_profile.R")
 source("R/99 - plot_mass_accuracy.R")
 source("R/99 - plot_norm_summary.R")
+source("R/99 - report_plot_2samples.R")
+source("R/99 - report_protein_profile_sites.R")
 
 # Convert zeros to NAs
 zero.to.na <- function(x) {
