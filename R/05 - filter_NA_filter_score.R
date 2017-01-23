@@ -33,7 +33,7 @@ filter_NA_Mann <- function(df) {
     group_by(peak_ID, group) %>%
     summarize(non_NA = sum(!is.na(intensity))) %>%
     group_by(peak_ID) %>%
-    filter(all(non_NA >= 2) | sum(non_NA >= 3)/n() > 0.75) %>%
+    filter(!(all(non_NA >= 2) | sum(non_NA >= 3)/n() > 0.75)) %>%
     ungroup() %>%
     select(peak_ID) %>%
     distinct()
