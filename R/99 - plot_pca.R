@@ -2,7 +2,7 @@
 # inx1, inx2 - the order numbers of PCs.
 # showNames - if TRUE then points at the plot are labeled.
 
-plot_PCA_loadings <- function(pca, inx1 = 1, inx2 = 2, showNames = F){
+plot_PCA_loadings <- function(df, inx1 = 1, inx2 = 2, showNames = F){
   pca <- PCA_anal(df)
   loadings <- pca$rotation[, c(inx1, inx2)]
   colnames(loadings) <- paste("Loadings", c(inx1, inx2))

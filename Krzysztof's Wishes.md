@@ -8,12 +8,12 @@
 - [x] Profile plot -- all peaks by Accession.
 - [x] Pareto and Auto scaling + intensity profile (like in Metaboanalyst)
 - [x] Reshape the quality check table
-
-- [ ] plots: fuzzy clustering of dynamic phosphorylation profiles
 - [x] plot: PCA (with loadings)
+
+- [ ] 2wayANOVA test (randomized blocks beacause all replicates are independent?)
+- [ ] plot: PLS-DA
 - [ ] plot: Volcano plot (p-val/fold change)
-- [x] plot: ann_ID intensity profile, choice of which ann_ID are plotted
-- [x] ions table -> join All_Accessions to peakData
+- [ ] plots: fuzzy clustering of dynamic phosphorylation profiles
 - [ ] for future: import function for MaxQuant output
 
 #### FIX:
@@ -27,3 +27,4 @@
 - [x] Improve make_conf performance
 - [ ] Simplify filter_unique_peptides since Accessions in All_accessions are arranged in the same way  
 - [ ] Update comments
+- [ ] ability to make DF with subset of original data (list of patterns in sample names?, e.g. - AZD/GLU-015; GLU-015)
