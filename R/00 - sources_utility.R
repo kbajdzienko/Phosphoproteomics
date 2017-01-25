@@ -31,6 +31,7 @@ source("R/99 - report_protein_profile_sites.R")
 source("R/99 - plot_pca.R")
 source("R/99 - plot_ratio_profiles.R")
 source("R/99 - plot_pls.R")
+source("R/99 - plot_pls_cv.R")
 source("R/99 - plot_volcano.R")
 source("R/99 - subset_df.R")
 
