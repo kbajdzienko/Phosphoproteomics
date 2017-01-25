@@ -9,14 +9,16 @@
 - [x] Pareto and Auto scaling + intensity profile (like in Metaboanalyst)
 - [x] Reshape the quality check table
 - [x] plot: PCA (with loadings)
+- [x] plot: Volcano plot (p-val/fold change)
+- [x] plots: fuzzy clustering of dynamic phosphorylation profiles
+
 
 - [ ] 2wayANOVA test (randomized blocks beacause all replicates are independent?)
 - [ ] plot: PLS-DA
-- [x] plot: Volcano plot (p-val/fold change)
-- [x] plots: fuzzy clustering of dynamic phosphorylation profiles
-- [ ] for future: import function for MaxQuant output
-
-- [ ] fucking Gene Ontology
+- [ ] fuzzy clustering - export list of accessions for each cluster (export, csv, col: siteID, cluster)
+- [ ] for applicable functions: add parameter to choose: intData, andIntData
+- [ ] change "ann" to "psite"
+- [ ] Add whiskers for time profile plot as an option
 
 #### FIX:
 - [x] sitesMerge - different number of ann_IDs in peakData and annIntData - (was no problem)
@@ -30,4 +32,5 @@
 - [ ] Simplify filter_unique_peptides since Accessions in All_accessions are arranged in the same way  
 - [ ] Update comments
 - [x] Ability to make DF with subset of original data (list of patterns in sample names?, e.g. - AZD/GLU-015; GLU-015)
-- [ ] Add whiskers for time profile plot as an option
+- [ ] for future: import function for MaxQuant output
+- [ ] fucking Gene Ontology
