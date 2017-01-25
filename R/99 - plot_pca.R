@@ -41,7 +41,7 @@ plot_PCA_scores <- function(df, inx1 = 1, inx2 = 2,
                      df$sampleData$color)
   plot(pc1, pc2, xlab = xlabel, ylab=ylabel, type='n', main="Scores Plot")
   points(pc1, pc2, pch = 23, col = "black", bg = color, cex = 2)
-  text(pc1, pc2, label = text.lbls, pos=4, col ="blue", xpd=T, cex=0.8)
+  if (showNames) text(pc1, pc2, label = text.lbls, pos=4, col ="blue", xpd=T, cex=0.8)
 
   par(op)
 }

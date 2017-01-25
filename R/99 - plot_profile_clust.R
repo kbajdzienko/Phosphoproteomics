@@ -1,5 +1,10 @@
+
+
+
+
+
 # Function for plotting the clusters
-plot_fuzz <- function(df, centers, m = mestimate(df), min.memberhip = 0,
+plot_fuzz <- function(df, centers, m = fuzz_m_estimate(df), min.memberhip = 0,
                       nrow = 4, ncol = 4, color, time.labels,
                       file = "OUTPUT/fuzz_clust.pdf") {
 
@@ -52,7 +57,7 @@ plot_fuzz <- function(df, centers, m = mestimate(df), min.memberhip = 0,
 
 
 # Fuzzy c-means clustering
-fuzz_clust <- function(df, centers, m = mestimate(df), ...){
+fuzz_clust <- function(df, centers, m = fuzz_m_estimate(df), ...){
   cl <- e1071::cmeans(intMatrix(df),
                       centers = centers,
                       method = "cmeans",
@@ -72,7 +77,7 @@ fuzz_m_estimate <- function(df) {
 }
 
 # Check number of empty clusters for disfferent cluster numbers
-fuzz_c_selection <- function(df, m = mestimate(df), crange = seq(4, 32, 4),
+fuzz_c_selection <- function(df, m = fuzz_m_estimate(df), crange = seq(4, 32, 4),
                        repeats = 5, visu = TRUE, ...){
 
   Nonempty <- matrix(0, ncol = length(crange), nrow = repeats)
@@ -101,7 +106,7 @@ fuzz_c_selection <- function(df, m = mestimate(df), crange = seq(4, 32, 4),
 
 
 #Plot minimal distance between clusters for different cluster numbers
-Dmin <- function(df, m = mestimate(df),
+Dmin <- function(df, m = fuzz_m_estimate(df),
                  crange = seq(4, 40, 4), repeats = 3, visu=TRUE){
   DminM <- matrix(0, nrow=length(crange), ncol=repeats)
   for (ii in 1:repeats) {
