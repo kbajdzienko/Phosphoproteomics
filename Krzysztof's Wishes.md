@@ -13,7 +13,7 @@
 - [ ] 2wayANOVA test (randomized blocks beacause all replicates are independent?)
 - [ ] plot: PLS-DA
 - [x] plot: Volcano plot (p-val/fold change)
-- [ ] plots: fuzzy clustering of dynamic phosphorylation profiles
+- [x] plots: fuzzy clustering of dynamic phosphorylation profiles
 - [ ] for future: import function for MaxQuant output
 
 #### FIX:
