@@ -29,7 +29,7 @@ plot_protein_profile_ratio <- function(df, protein) {
   # Plot
   ggplot(data, aes(x = time, y = ratio, group = ann_ID, color = ann_ID)) +
     geom_smooth(size = 0.5) +
-    scale_y_continuous('Log-ratio') +
+    scale_y_continuous('Log2-ratio') +
     scale_x_continuous('Time, min') +
     labs(title = protein) +
     theme(
