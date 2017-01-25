@@ -27,4 +27,5 @@
 - [x] Improve make_conf performance
 - [ ] Simplify filter_unique_peptides since Accessions in All_accessions are arranged in the same way  
 - [ ] Update comments
-- [x] ability to make DF with subset of original data (list of patterns in sample names?, e.g. - AZD/GLU-015; GLU-015)
+- [x] Ability to make DF with subset of original data (list of patterns in sample names?, e.g. - AZD/GLU-015; GLU-015)
+- [ ] Add whiskers for time profile plot as an option
