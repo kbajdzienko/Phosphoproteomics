@@ -16,6 +16,8 @@
 - [x] plots: fuzzy clustering of dynamic phosphorylation profiles
 - [ ] for future: import function for MaxQuant output
 
+- [ ] fucking Gene Ontology
+
 #### FIX:
 - [x] sitesMerge - different number of ann_IDs in peakData and annIntData - (was no problem)
 - [x] ADD check for uniqueness of sequence-accession-mass-score combination for merging df and mascot in make_annID
