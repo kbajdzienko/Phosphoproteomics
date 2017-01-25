@@ -2,7 +2,7 @@
 # Example:
 # plot_acc(df, "AT3G60600.1")
 
-plot_acc <- function(df, protein) {
+plot_acc <- function(df, protein = "AT5G10360.1") {
   require(ggplot2)
 
   # Log transform if not
