@@ -2,7 +2,7 @@
 # Example:
 # plot_acc(df, "AT3G60600.1")
 
-plot_protein_profile_ratio <- function(df, protein) {
+plot_protein_profile_ratio <- function(df, protein, smooth = FALSE) {
   require(ggplot2)
 
   # Log transform if not
@@ -28,7 +28,7 @@ plot_protein_profile_ratio <- function(df, protein) {
 
   # Plot
   ggplot(data, aes(x = time, y = ratio, group = ann_ID, color = ann_ID)) +
-    geom_smooth(size = 0.5) +
+    do.call(paste0("geom_", if_else(smooth, "smooth", "line")), list(size = 0.5)) +
     scale_y_continuous('Log2-ratio') +
     scale_x_continuous('Time, min') +
     labs(title = protein) +
