@@ -49,6 +49,7 @@ QC_stat_mascot <- function(mascot_file) {
   # Identified phosphorylated sites
   phos.sites <-
     mascot %>%
+    distinct(prot_acc, pep_start, pep_var_mod_pos) %>%
     group_by(prot_acc) %>%
     summarize(n_sites = countSites(pep_start, pep_var_mod_pos)) %>%
     summarize('(P)-Sites' = sum(n_sites), 'Sites/protein' = sum(n_sites)/n())

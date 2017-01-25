@@ -1,23 +1,20 @@
 
-dtt_import <- function(df, peptide_file, mascot_file, ions_file,
+dtt_import <- function(peptide_file, mascot_file, ions_file,
                       abundance = "Raw") {
   
-  df <- tidy_PQI(file = peptide_file, abundance = abundance)
+  df <- tidy_PQI(peptide_file, abundance)
   
-  df <- make_annID(df, mascot_file = mascot_file)
+  df <- make_annID(df, mascot_file)
   
-  df <- make_conf(df, mascot_file = mascot_file)
+  df <- make_conf(df, mascot_file)
   
-  df <- make_all_acc(df, ions_file = ions_file)
+  df <- make_all_acc(df, ions_file)
   
   
   
  return(df)
   
 }
-
-
-
 
 
 dtt_clean <- function(
@@ -28,13 +25,13 @@ dtt_clean <- function(
   
   df <- filter_phos_conf(df, score_threshold = 70)
   
-  df <- filter_score(df, score_threshold = score)
+  df <- filter_score(df, score)
   
   df <- filter_NA(df, threshold = 0.7)  
   
   df <- normMedian(df)
   
-  df <- fillNA(df, method = NAimputation)
+  df <- fillNA(df, NAimputation)
 
   df <- sitesMerge(df)
   
