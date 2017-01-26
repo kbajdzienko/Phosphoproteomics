@@ -17,6 +17,7 @@
 - [ ] plot: PLS-DA
 - [ ] fuzzy clustering - export list of accessions for each cluster (export, csv, col: siteID, cluster)
 - [ ] for applicable functions: add parameter to choose: intData, andIntData
+- [ ] for all functions (if applicable): add logTransform, normScale (when not necessary but might be good option in your opinion, please add a note on top inside the script)
 - [ ] change "ann" to "psite"
 - [ ] Add whiskers for time profile plot as an option
 
