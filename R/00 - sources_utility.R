@@ -4,6 +4,11 @@ if (!require("tidyverse", character.only = T)) install.packages("tidyverse")
 
 library(plyr)
 library(tidyverse)
+library(RColorBrewer)
+library(treemap)
+library(ggplot2)
+library(e1071)
+
 
 source("R/00 - data_processing_pipeline.R")
 source("R/01.1 - tidy_PQI.R")
@@ -34,6 +39,8 @@ source("R/99 - plot_pls.R")
 source("R/99 - plot_pls_cv.R")
 source("R/99 - plot_volcano.R")
 source("R/99 - subset_df.R")
+source("R/99 - plot_profile_clust.R")
+
 
 
 # Convert zeros to NAs
