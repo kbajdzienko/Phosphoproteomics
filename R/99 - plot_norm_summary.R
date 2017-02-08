@@ -3,7 +3,7 @@
 
 plot_norm_summary <- function(df.pre, df.post, mode) {
   match.arg(mode, c("peak", "sample"))
-
+message("Those plotting functions perform log2 transformation of intensities if it was not transformed yet.")
   layout(matrix(c(1,1,1,2,3,3,3,4), 4, 2, byrow = FALSE))
 
   # fig 1
