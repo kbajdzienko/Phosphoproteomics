@@ -53,6 +53,8 @@ PCA_anal <-function(df){
     df %>%
     filter_NA() %>%
     fillNA() %>%
+    logTransform() %>%
+    normScale() %>%
     intMatrix() %>%
     t() %>%
     prcomp(center = T, scale = T)
