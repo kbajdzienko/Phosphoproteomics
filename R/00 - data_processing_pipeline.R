@@ -10,6 +10,8 @@ dtt_import <- function(peptide_file, mascot_file, ions_file,
   
   df <- make_all_acc(df, ions_file)
   
+  df <- make_sampleData(df)
+  
   
   
  return(df)
@@ -23,15 +25,16 @@ dtt_clean <- function(
                 score = 29
                 ) {
   
+  
   df <- filter_phos_conf(df, score_threshold = 70)
   
-  df <- filter_score(df, score)
+  df <- filter_score(df, score=25)
   
   df <- filter_NA(df, threshold = 0.7)  
   
   df <- normMedian(df)
   
-  df <- fillNA(df, NAimputation)
+  df <- fillNA(df, "ppca")
 
   df <- sitesMerge(df)
   
