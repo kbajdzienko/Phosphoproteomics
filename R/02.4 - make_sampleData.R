@@ -1,6 +1,33 @@
 # Add grouping variables (time, treatment) and colors to sampleData
 # One function for each dataset
 
+#General sample data
+make_sampleData <- function(df) {
+  sampleData <-
+    df$sampleData %>%
+    mutate(group = gsub("(?=\\b[[:digit:]]{2}$)", "0", group, perl = TRUE)) %>%
+    mutate(group = gsub("(?=[[:digit:]]{3})", "", group, perl = TRUE)) %>%
+    mutate(sample_ID = stringr::str_extract(sample_ID, "\\d{1,3}$")) %>%
+    mutate(treatment = stringr::str_extract(group, "[[:upper:]]{3,4}")) %>%
+    mutate(time = na.to.zero(as.integer(gsub("^.*-", "", group))))
+    
+  df$intData <- 
+    df$intData %>%
+    mutate(sample_ID = stringr::str_extract(sample_ID, "\\d{1,3}$"))
+  
+  # Add colors
+  timeline <- sort(unique(sampleData$time))
+  colorVector <- colorRampPalette(c("white", "green"))(length(timeline))
+  names(colorVector) <- timeline
+  
+  df$sampleData <-
+    sampleData %>%
+    mutate(color = colorVector[as.character(time)])
+  
+  return(df)
+}
+
+
 #EXP16
 make_sampleData_exp16 <- function(df) {
   sampleData <-
@@ -64,5 +91,4 @@ make_sampleData_exp18 <- function(df) {
 
   return(df)
 }
-
 
