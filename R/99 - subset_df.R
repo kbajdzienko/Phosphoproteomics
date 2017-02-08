@@ -10,7 +10,7 @@ subset_df_samples <- function(df, pattern) {
 subset_df_acc <- function(df, acc_list) {
   df$annData <- filter(df$annData, Accession %in% acc_list)
   df$peakData <- filter(df$peakData, Accession %in% acc_list)
-  df$intData <- semi_join(df$peakData,df$intData, by = Accession)
-  df$annIntData <- semi_join(df$annData,df$annIntData, by = Accession)
+  df$intData <- right_join(df$peakData,df$intData, by = "peak_ID") %>% select(peak_ID, sample_ID, intensity)
+  df$annIntData <- right_join(df$annData,df$annIntData, by = "ann_ID") %>% select(ann_ID, sample_ID, intensity)
   return(df)
 }
