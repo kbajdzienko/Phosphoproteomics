@@ -1,12 +1,11 @@
-
-
-
-
+# 1. Run Dmin()
+# 2. Check for number of centeres with fuzz_c_selection()
+# 3. Run plot_fuzz()
 
 # Function for plotting the clusters
 plot_fuzz <- function(df, centers, m = fuzz_m_estimate(df), min.memberhip = 0,
                       nrow = 4, ncol = 4, color, time.labels,
-                      file = "OUTPUT/fuzz_clust.pdf") {
+                      file = "fuzz_clust.pdf") {
 
   cl <- fuzz_clust(df, centers, m)
 
