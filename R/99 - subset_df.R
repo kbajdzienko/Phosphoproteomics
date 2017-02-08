@@ -1,5 +1,5 @@
 subset_df_samples <- function(df, pattern) {
-  shitsamples <- filter(df$sampleData, !grepl(pattern, sample_ID)) %>% select(sample_ID)
+  shitsamples <- filter(df$sampleData, !grepl(pattern, group)) %>% select(sample_ID)
   df$sampleData <- anti_join(df$sampleData, shitsamples)
   df$intData <- anti_join(df$intData, shitsamples)
   df$annIntData <- anti_join(df$annIntData, shitsamples)
