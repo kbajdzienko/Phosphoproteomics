@@ -11,15 +11,15 @@
 - [x] plot: PCA (with loadings)
 - [x] plot: Volcano plot (p-val/fold change)
 - [x] plots: fuzzy clustering of dynamic phosphorylation profiles
+- [x] plot: PLS-DA
 
-
+- [ ] Add whiskers for time profile plot as an option
 - [ ] 2wayANOVA test (randomized blocks beacause all replicates are independent?)
-- [ ] plot: PLS-DA
 - [ ] fuzzy clustering - export list of accessions for each cluster (export, csv, col: siteID, cluster)
 - [ ] for applicable functions: add parameter to choose: intData, andIntData
 - [ ] for all functions (if applicable): add logTransform, normScale (when not necessary but might be good option in your opinion, please add a note on top inside the script)
 - [ ] change "ann" to "psite"
-- [ ] Add whiskers for time profile plot as an option
+
 
 #### FIX:
 - [x] sitesMerge - different number of ann_IDs in peakData and annIntData - (was no problem)
