@@ -1,4 +1,4 @@
-# Plot MSstat general intensity profile accross the samples for quality check
+# Plot general intensity profile accross the samples for quality check
 
 plot_int_profile <- function(df) {
   require(ggplot2)
