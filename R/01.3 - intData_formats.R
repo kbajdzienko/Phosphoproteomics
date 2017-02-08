@@ -3,6 +3,7 @@
 intTable <- function (df) {
   intTable <-
     df$intData %>%
+    #mutate(sample_ID = stringr::str_extract(sample_ID, "(\\d{1,}$)")) %>%
     spread(sample_ID, intensity)
   return(intTable)
 }
