@@ -8,7 +8,9 @@
 # score plot
 plot_PLS_scores <- function(df, inx1 = 1, inx2 = 2,
                             reg = 0.95, show = TRUE) {
-
+  df <- logTransform(df)
+  df <- normScale(df)
+  
   pls <- PLS_anal(df)
   xlabel = paste("Component", inx1, "(", round(100*pls$Xvar[inx1]/pls$Xtotvar, 1), "%)");
   ylabel = paste("Component", inx2, "(", round(100*pls$Xvar[inx2]/pls$Xtotvar, 1), "%)");
