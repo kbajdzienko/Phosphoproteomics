@@ -40,6 +40,8 @@ source("R/99 - plot_pls_cv.R")
 source("R/99 - plot_volcano.R")
 source("R/99 - subset_df.R")
 source("R/99 - plot_profile_clust.R")
+source("R/99 - anova and tukey post-hoc.R")
+source("R/99 - report_FC_p.R")
 
 
 
