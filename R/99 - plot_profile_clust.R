@@ -1,5 +1,6 @@
 # 1. Run Dmin()
 # 2. Check for number of centeres with fuzz_c_selection()
+# 2. in fuzz_c_selection All values in subsequent column shoud be equal to value in c:value
 # 3. Run plot_fuzz()
 
 # Function for plotting the clusters
