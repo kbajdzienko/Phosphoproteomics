@@ -1,3 +1,5 @@
+# Subset by pattern of sample names
+
 subset_df_samples <- function(df, pattern) {
   shitsamples <- filter(df$sampleData, !grepl(pattern, group)) %>% select(sample_ID)
   df$sampleData <- anti_join(df$sampleData, shitsamples)
@@ -6,6 +8,7 @@ subset_df_samples <- function(df, pattern) {
   return(df)
 }
 
+# Subset by the vector of accessions
 
 subset_df_acc <- function(df, acc_list) {
   df$annData <- filter(df$annData, Accession %in% acc_list)
