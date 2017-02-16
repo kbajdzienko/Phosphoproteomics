@@ -19,14 +19,16 @@ report_FC_p <- function(df, group1, group2,
     summarize(p.value = do.call(method, list(intensity[group == group1], intensity[group == group2]))$p.value,
               FC = mean(intensity[group == group1], na.rm = T)/mean(intensity[group == group2], na.rm = T)) %>%
     mutate(signif = abs(p.value) < p.threshold & abs(FC) > FC.threshold) %>%
-    filter(signif==TRUE)}  else if(data.type=="peakID"){
+    mutate(q.value = p.adjust(p.value, "BH"))
+  }  
+  else if(data.type=="peakID"){
   stat_mat <-  filter(df$sampleData, group %in% c(group1, group2)) %>%
   left_join(df$intData) %>%
     group_by(peak_ID) %>%
     summarize(p.value = do.call(method, list(intensity[group == group1], intensity[group == group2]))$p.value,
               FC = mean(intensity[group == group1], na.rm = T)/mean(intensity[group == group2], na.rm = T)) %>%
     mutate(signif = abs(p.value) < p.threshold & abs(FC) > FC.threshold) %>%
-    filter(signif==TRUE)}
+    mutate(q.value = p.adjust(p.value, "BH"))}
   return(stat_mat)
 }
   
