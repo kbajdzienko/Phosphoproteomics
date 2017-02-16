@@ -27,7 +27,55 @@ plot_PLS_scores <- function(df, inx1 = 1, inx2 = 2,
   points(pc1, pc2, pch = 23, col = "black", bg = color, cex = 2)
   text(pc1, pc2, label = text.lbls, pos=4, col ="blue", xpd=T, cex=0.8)
 }
-
+#PLS score plot with customizable graphical parameters
+plot_PLS_scoresKB <- function(df, inx1 = 1, inx2 = 2,
+                             reg = 0.95, show = TRUE,
+                             setcolour = "time") {
+  
+  match.arg(setcolour, c("time", "treatment"))
+  
+    #Prepare df if not cleaned
+  df <- filter_NA_Mann(df)
+  df <- fillNA(df)
+  df <- logTransform(df)
+  df <- normScale(df)
+  #Perform PLSDA
+  pls <- PLS_anal(df)
+  #Extract scores for 2 specified components and arrange them with sample data 
+  plstbl <- df$sampleData %>% 
+    mutate(sample_ID = as.numeric(sample_ID)) %>% 
+    mutate(time = as.character(time)) %>%
+    arrange(sample_ID) %>% 
+    cbind(pls$scores[,inx1]) %>% 
+    cbind(pls$scores[,inx2])
+  plstbl$time <-  reorder(plstbl$time, order(plstbl$sample_ID))
+  names(plstbl)[6] <- paste("Component", inx1, "(", round(100*pls$Xvar[inx1]/pls$Xtotvar, 1), "%)")
+  names(plstbl)[7] <- paste("Component", inx2, "(", round(100*pls$Xvar[inx2]/pls$Xtotvar, 1), "%)")
+  
+  #Prepare ggplot object and plot PLS scores
+  if (setcolour == "time") {
+    plsgg <- ggplot(plstbl, aes(plstbl[,6], plstbl[,7],shape=treatment, colour=time, size=2))
+    plsgg+
+      geom_point()+
+      geom_text(aes(label=sample_ID),hjust=-0.2, vjust=-0.3, size=3)+
+      theme_bw()+
+      xlab(names(plstbl)[6])+
+      ylab(names(plstbl)[7])+
+      guides(colour=guide_legend(title="Time (min)"),
+             shape=guide_legend(title="Treatement"))
+  } else if (setcolour == "treatment") {
+    plsgg <- ggplot(plstbl, aes(plstbl[,6], plstbl[,7],shape=time, colour=treatment,size=2))
+    plsgg+
+      geom_point()+
+      geom_text(aes(label=sample_ID),hjust=-0.2, vjust=-0.3, size=3)+
+      theme_bw()+
+      xlab(names(plstbl)[6])+
+      ylab(names(plstbl)[7])+
+      guides(colour=guide_legend(title="Treatment"),
+             shape=guide_legend(title="Time (min)"))
+  } #if END
+  
+} #function END
 
 #' PLS analysis
 
