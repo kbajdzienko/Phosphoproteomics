@@ -61,21 +61,22 @@ plot_PCA_scoresKB <- function(df, inx1 = 1, inx2 = 2,
   pca <- PCA_anal(df)
   #Extract scores for 2 specified components and arrange them with sample data 
   pcatbl <- df$sampleData %>% 
-    mutate(sample_ID = as.numeric(sample_ID)) %>% 
-    mutate(time = as.character(time)) %>%
     arrange(sample_ID) %>% 
     cbind(pca$x[,inx1]) %>% 
-    cbind(pca$x[,inx2])
+    cbind(pca$x[,inx2]) %>%
+    mutate(sample_ID = as.numeric(sample_ID)) %>% 
+    mutate(time = as.character(time)) %>%
+    arrange(sample_ID)
   pcatbl$time <-  reorder(pcatbl$time, order(pcatbl$sample_ID))
   names(pcatbl)[6] <- paste("Component", inx1, "(", round(100*pca$Xvar[inx1]/pca$Xtotvar, 1), "%)")
   names(pcatbl)[7] <- paste("Component", inx2, "(", round(100*pca$Xvar[inx2]/pca$Xtotvar, 1), "%)")
   
   #Prepare ggplot object and plot pca scores
   if (setcolour == "time") {
-    pcagg <- ggplot(pcatbl, aes(pcatbl[,6], pcatbl[,7],shape=time, colour=treatment, size=2))
+    pcagg <- ggplot(pcatbl, aes(pcatbl[,6], pcatbl[,7],shape=treatment, colour=time))
     pcagg+
       geom_point()+
-      #geom_text(aes(label=sample_ID),hjust=-0.2, vjust=-0.3, size=3)+
+      geom_text(aes(label=sample_ID),hjust=-0.4, vjust=-0.5, size=3)+
       theme_bw()+
       xlab(names(pcatbl)[6])+
       ylab(names(pcatbl)[7])+
@@ -85,7 +86,7 @@ plot_PCA_scoresKB <- function(df, inx1 = 1, inx2 = 2,
     pcagg <- ggplot(pcatbl, aes(pcatbl[,6], pcatbl[,7],shape=time, colour=treatment))
     pcagg+
       geom_point()+
-      #geom_text(aes(label=sample_ID),hjust=-0.2, vjust=-0.3, size=3)+
+      geom_text(aes(label=sample_ID),hjust=-0.4, vjust=-0.5, size=3)+
       theme_bw()+
       xlab(names(pcatbl)[6])+
       ylab(names(pcatbl)[7])+

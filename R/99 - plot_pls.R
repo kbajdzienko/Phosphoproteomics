@@ -43,31 +43,32 @@ plot_PLS_scoresKB <- function(df, inx1 = 1, inx2 = 2,
   pls <- PLS_anal(df)
   #Extract scores for 2 specified components and arrange them with sample data 
   plstbl <- df$sampleData %>% 
-    mutate(sample_ID = as.numeric(sample_ID)) %>% 
-    mutate(time = as.character(time)) %>%
     arrange(sample_ID) %>% 
     cbind(pls$scores[,inx1]) %>% 
-    cbind(pls$scores[,inx2])
+    cbind(pls$scores[,inx2])%>%
+    mutate(sample_ID = as.numeric(sample_ID)) %>% 
+    mutate(time = as.character(time)) %>%
+    arrange(sample_ID)
   plstbl$time <-  reorder(plstbl$time, order(plstbl$sample_ID))
   names(plstbl)[6] <- paste("Component", inx1, "(", round(100*pls$Xvar[inx1]/pls$Xtotvar, 1), "%)")
   names(plstbl)[7] <- paste("Component", inx2, "(", round(100*pls$Xvar[inx2]/pls$Xtotvar, 1), "%)")
   
   #Prepare ggplot object and plot PLS scores
   if (setcolour == "time") {
-    plsgg <- ggplot(plstbl, aes(plstbl[,6], plstbl[,7],shape=treatment, colour=time, size=2))
+    plsgg <- ggplot(plstbl, aes(plstbl[,6], plstbl[,7],shape=treatment, colour=time))
     plsgg+
       geom_point()+
-      geom_text(aes(label=sample_ID),hjust=-0.2, vjust=-0.3, size=3)+
+      geom_text(aes(label=sample_ID),hjust=-0.4, vjust=-0.5, size=3)+
       theme_bw()+
       xlab(names(plstbl)[6])+
       ylab(names(plstbl)[7])+
       guides(colour=guide_legend(title="Time (min)"),
              shape=guide_legend(title="Treatement"))
   } else if (setcolour == "treatment") {
-    plsgg <- ggplot(plstbl, aes(plstbl[,6], plstbl[,7],shape=time, colour=treatment,size=2))
+    plsgg <- ggplot(plstbl, aes(plstbl[,6], plstbl[,7],shape=time, colour=treatment))
     plsgg+
       geom_point()+
-      geom_text(aes(label=sample_ID),hjust=-0.2, vjust=-0.3, size=3)+
+      geom_text(aes(label=sample_ID),hjust=-0.4, vjust=-0.5, size=3)+
       theme_bw()+
       xlab(names(plstbl)[6])+
       ylab(names(plstbl)[7])+
