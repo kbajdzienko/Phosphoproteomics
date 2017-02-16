@@ -1,6 +1,9 @@
 # Plot MSstat protein profile
 # Example:
 # plot_acc(df, "AT3G60600.1")
+#
+# Plot difference between means of log2 intensity betwee
+# +- standard deviation of log2 intensities
 
 plot_protein_profile_ratio <- function(df,
                                        protein,
