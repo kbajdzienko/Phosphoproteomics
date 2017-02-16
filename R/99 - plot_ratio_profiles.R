@@ -2,7 +2,7 @@
 # Example:
 # plot_acc(df, "AT3G60600.1")
 
-plot_protein_profile_ratio <- function(df, protein, smooth = TRUE) {
+plot_protein_profile_ratio <- function(df, protein ="AT3G60600.1", treatment_group, control_group, smooth = TRUE) {
   require(ggplot2)
 
   # Log transform if not
@@ -14,7 +14,7 @@ plot_protein_profile_ratio <- function(df, protein, smooth = TRUE) {
     group_by(ann_ID, treatment, time) %>%
     summarise(int_mean = mean(intensity, na.rm = T)) %>%
     group_by(ann_ID, time) %>%
-    summarize(ratio = int_mean[treatment == "AZD/GLU"]-int_mean[treatment == "GLU"]) %>%
+    summarize(ratio = int_mean[treatment == treatment_group]-int_mean[treatment == control_group]) %>%
     ungroup() %>%
     left_join(df$annData) %>%
     filter(Accession == protein) %>%
@@ -29,8 +29,8 @@ plot_protein_profile_ratio <- function(df, protein, smooth = TRUE) {
   # Plot
   ggplot(data, aes(x = time, y = ratio, group = ann_ID, color = ann_ID)) +
     do.call(paste0("geom_", if_else(smooth, "smooth", "line")), list(size = 0.5)) +
-    scale_y_continuous('Log2-ratio') +
-    scale_x_continuous('Time, min') +
+    #scale_y_continuous('Log2-ratio') +
+    #scale_x_continuous('Time, min') +
     labs(title = protein) +
     theme(
       panel.background = element_rect(fill = 'white', colour = "black"),
