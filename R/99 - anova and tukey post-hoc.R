@@ -23,7 +23,7 @@ groups <- factor(arrange(df$sampleData, group)$group,
 p.values <- apply(intMatrix(df),1, anova.setup, groups)
 df_p.values <- p.adjust(p.values, "BH")
 df_p.values <- as.data.frame(df_p.values) %>% filter(df_p.values <0.05)
-df_p.values <- cbind(peakID = rownames(df_p.values), df_p.values)
+df_p.values <- cbind(peak_ID = rownames(df_p.values), df_p.values)
 rownames(df_p.values) <- NULL
 return(df_p.values)
 }
@@ -42,7 +42,7 @@ gp <- getPairs(groups)
       })
 df.tuk <- t(tuk.p.values)
 df.tuk<- as.data.frame(df.tuk)
-df.tuk <- cbind(peakID = rownames(df.tuk), df.tuk)
+df.tuk <- cbind(peak_ID = rownames(df.tuk), df.tuk)
 rownames(df.tuk) <- NULL
 df.tuk <- gather(df.tuk, contains("-"), key="Comparison", value="p.val") %>% 
   filter(p.val<0.05) %>% 

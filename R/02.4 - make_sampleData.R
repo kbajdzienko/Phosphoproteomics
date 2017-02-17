@@ -9,7 +9,8 @@ make_sampleData <- function(df) {
     mutate(group = gsub("(?=[[:digit:]]{3})", "", group, perl = TRUE)) %>%
     mutate(sample_ID = stringr::str_extract(sample_ID, "\\d{1,3}$")) %>%
     mutate(treatment = stringr::str_extract(group, "[[:upper:]]{3,4}")) %>%
-    mutate(time = na.to.zero(as.integer(gsub("^.*-", "", group))))
+    mutate(time = na.to.zero(as.integer(gsub("^.*-", "", group)))) %>%
+    arrange(as.numeric(sample_ID))
     
   df$intData <- 
     df$intData %>%

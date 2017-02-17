@@ -30,7 +30,7 @@ dtt_clean <- function(
   
   df <- filter_score(df, score=25)
   
-  df <- filter_NA(df, threshold = 0.7)  
+  df <- filter_NA_Mann(df)  
   
   df <- normMedian(df)
   

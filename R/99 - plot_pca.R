@@ -46,7 +46,55 @@ plot_PCA_scores <- function(df, inx1 = 1, inx2 = 2,
   par(op)
 }
 
-
+plot_PCA_scoresKB <- function(df, inx1 = 1, inx2 = 2,
+                              reg = 0.95, show = TRUE,
+                              setcolour = "time") {
+  
+  match.arg(setcolour, c("time", "treatment"))
+  
+  #Prepare df if not cleaned
+  df <- filter_NA_Mann(df)
+  df <- fillNA(df)
+  df <- logTransform(df)
+  df <- normScale(df)
+  #Perform pcaDA
+  pca <- PCA_anal(df)
+  #Extract scores for 2 specified components and arrange them with sample data 
+  pcatbl <- df$sampleData %>% 
+    arrange(sample_ID) %>% 
+    cbind(pca$x[,inx1]) %>% 
+    cbind(pca$x[,inx2]) %>%
+    mutate(sample_ID = as.numeric(sample_ID)) %>% 
+    mutate(time = as.character(time)) %>%
+    arrange(sample_ID)
+  pcatbl$time <-  reorder(pcatbl$time, order(pcatbl$sample_ID))
+  names(pcatbl)[6] <- paste("Component", inx1, "(", round(100*pca$Xvar[inx1]/pca$Xtotvar, 1), "%)")
+  names(pcatbl)[7] <- paste("Component", inx2, "(", round(100*pca$Xvar[inx2]/pca$Xtotvar, 1), "%)")
+  
+  #Prepare ggplot object and plot pca scores
+  if (setcolour == "time") {
+    pcagg <- ggplot(pcatbl, aes(pcatbl[,6], pcatbl[,7],shape=treatment, colour=time))
+    pcagg+
+      geom_point()+
+      geom_text(aes(label=sample_ID),hjust=-0.4, vjust=-0.5, size=3)+
+      theme_bw()+
+      xlab(names(pcatbl)[6])+
+      ylab(names(pcatbl)[7])+
+      guides(colour=guide_legend(title="Time (min)"),
+             shape=guide_legend(title="Treatement"))
+  } else if (setcolour == "treatment") {
+    pcagg <- ggplot(pcatbl, aes(pcatbl[,6], pcatbl[,7],shape=time, colour=treatment))
+    pcagg+
+      geom_point()+
+      geom_text(aes(label=sample_ID),hjust=-0.4, vjust=-0.5, size=3)+
+      theme_bw()+
+      xlab(names(pcatbl)[6])+
+      ylab(names(pcatbl)[7])+
+      guides(colour=guide_legend(title="Treatment"),
+             shape=guide_legend(title="Time (min)"))
+  } #if END
+  
+} #function END
 
 PCA_anal <-function(df){
   pca <-
@@ -84,12 +132,12 @@ PCA_anal <-function(df){
 #                        dimnames = list(NULL, NULL, lvs))
 #
 #     for(lvl in lvs) {
-#       smpls <-
+#       smpca <-
 #         df$sampleData %>%
 #         filter(group == lvl) %>%
 #         .$sample_ID
-#       groupVar <- var(cbind(pc1[smpls], pc2[smpls]), na.rm = T)
-#       groupMean <- cbind(mean(pc1[smpls], na.rm = T), mean(pc2[smpls], na.rm = T))
+#       groupVar <- var(cbind(pc1[smpca], pc2[smpca]), na.rm = T)
+#       groupMean <- cbind(mean(pc1[smpca], na.rm = T), mean(pc2[smpca], na.rm = T))
 #       pts.array[ , , lvl] <- ellipse::ellipse(groupVar,
 #                                          centre = groupMean,
 #                                          level = reg)
