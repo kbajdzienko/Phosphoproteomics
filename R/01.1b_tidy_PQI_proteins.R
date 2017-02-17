@@ -4,7 +4,7 @@
 tidy_PQI_proteins <- function(file) {
   
  
-  df <- read.csv("DATA/EXP064-proteins.csv",
+  df <- read.csv(file,
                  header = F, sep = ",",
                  stringsAsFactors = F,
                  colClasses = "character")
@@ -50,8 +50,7 @@ tidy_PQI_proteins <- function(file) {
     mutate(group = gsub("(?=[[:digit:]]{3})", "", group, perl = TRUE)) %>%
     mutate(sample_ID = stringr::str_extract(sample_ID, "\\d{1,3}$")) %>%
     mutate(treatment = stringr::str_extract(group, "[[:upper:]]{3,4}")) %>%
-    mutate(time = as.integer(gsub("^.*-", "", group))) %>%
-    arrange(as.numeric(sample_ID))
+    mutate(time = as.integer(gsub("^.*-", "", group)))
   
   
   # Funciton, adding _1, _2, _3, ... indexes to duplicated peak IDs
