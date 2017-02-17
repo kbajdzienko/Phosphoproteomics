@@ -6,14 +6,18 @@
 # +- standard deviation of log2 intensities
 
 plot_protein_profile_ratio <- function(df,
-                                       protein,
+                                       protein="AT3G60600.1",
                                        smooth = TRUE,
-                                       whiskers = TRUE) {
+                                       whiskers = TRUE,
+                                       treatment_group="AZD",
+                                       control_group="DMSO",
+                                       data="peptide") {
   require(ggplot2)
-
+  match.arg(data, c("peptide", "p-site"))
   # Log transform if not
   if (!is.log(df$intData$intensity)) df <- logTransform(df)
-
+  
+  if (data == "p-site") {
   data <-
     df$annIntData %>%
     left_join(df$sampleData) %>%
@@ -21,15 +25,32 @@ plot_protein_profile_ratio <- function(df,
     summarise(int_mean = mean(intensity, na.rm = T),
               int_sd = sd(intensity, na.rm = T)) %>%
     group_by(ann_ID, time) %>%
-    summarize(ratio = int_mean[treatment == "AZD/GLU"]-int_mean[treatment == "GLU"],
-              int_sd = int_sd[treatment == "AZD/GLU"] + int_sd[treatment == "GLU"]) %>%
+    summarize(ratio = int_mean[treatment == treatment_group]-int_mean[treatment == control_group],
+              int_sd = int_sd[treatment == treatment_group] + int_sd[treatment == control_group]) %>%
     ungroup() %>%
     left_join(df$annData) %>%
     filter(Accession == protein) %>%
     mutate(ann_ID = gsub("^[[:alnum:]]+.*[[:alnum:]]*_", "", ann_ID)) %>%
     mutate(Position = as.integer(gsub("[[:alpha:]]+", "", ann_ID))) %>%
     arrange(Position)
-
+  }
+  if (data == "peptide") {
+    data <-
+      df$intData %>%
+      left_join(df$sampleData) %>%
+      group_by(peak_ID, treatment, time) %>%
+      summarise(int_mean = mean(intensity, na.rm = T),
+                int_sd = sd(intensity, na.rm = T)) %>%
+      group_by(peak_ID, time) %>%
+      summarize(ratio = int_mean[treatment == treatment_group]-int_mean[treatment == control_group],
+                int_sd = int_sd[treatment == treatment_group] + int_sd[treatment == control_group]) %>%
+      ungroup() %>%
+      left_join(df$peakData) %>%
+      filter(Accession == protein) %>%
+      mutate(peak_ID = gsub("^[[:alnum:]]+.*[[:alnum:]]*_", "", peak_ID)) %>%
+      mutate(Position = as.integer(gsub("[[:alpha:]]+", "", peak_ID))) %>%
+      arrange(Position)
+  }
   # Reorder levels of factor ann_ID by position number for plot legend
   data$ann_ID <- reorder(data$ann_ID, data$Position)
 
