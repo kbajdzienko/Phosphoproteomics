@@ -10,7 +10,7 @@ dtt_import <- function(peptide_file, mascot_file, ions_file,
   
   df <- make_all_acc(df, ions_file)
   
-  df <- make_sampleData(df)
+  
   
   
   
