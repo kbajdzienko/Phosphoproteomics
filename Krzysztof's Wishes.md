@@ -13,9 +13,10 @@
 - [x] plots: fuzzy clustering of dynamic phosphorylation profiles
 - [x] plot: PLS-DA
 
-- [ ] Add whiskers for time profile plot as an option
-- [ ] 2wayANOVA test (randomized blocks beacause all replicates are independent?)
+- [x] Add whiskers for time profile plot as an option
+- [x] 2wayANOVA test (randomized blocks beacause all replicates are independent?)
 - [ ] fuzzy clustering - export list of accessions for each cluster (export, csv, col: siteID, cluster)
+- [ ] removing outliers (Krzysztof)
 - [ ] for applicable functions: add parameter to choose: intData, andIntData
 - [ ] for all functions (if applicable): add logTransform, normScale (when not necessary but might be good option in your opinion, please add a note on top inside the script)
 - [ ] change "ann" to "psite"
