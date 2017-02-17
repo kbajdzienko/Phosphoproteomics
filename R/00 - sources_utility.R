@@ -11,7 +11,8 @@ library(e1071)
 
 
 source("R/00 - data_processing_pipeline.R")
-source("R/01.1 - tidy_PQI.R")
+source("R/01.1a - tidy_PQI_peptides.R")
+source("R/01.1b_tidy_PQI_proteins.R")
 source("R/01.2 - read_mascot.R")
 source("R/01.3 - intData_formats.R")
 source("R/01.4 - read_ions.R")
