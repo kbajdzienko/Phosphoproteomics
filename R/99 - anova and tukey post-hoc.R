@@ -45,8 +45,11 @@ df.tuk<- as.data.frame(df.tuk)
 df.tuk <- cbind(peak_ID = rownames(df.tuk), df.tuk)
 rownames(df.tuk) <- NULL
 df.tuk <- gather(df.tuk, contains("-"), key="Comparison", value="p.val") %>% 
-  filter(p.val<0.05) %>% 
-  arrange(p.val)
+  group_by(Comparison) %>%
+  mutate(q.val= p.adjust(p.val, "BY")) %>%
+  arrange(q.val)
 
 return(df.tuk)
 }
+
+
