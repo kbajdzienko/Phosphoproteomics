@@ -63,7 +63,8 @@ plot_PLS_scoresKB <- function(df, inx1 = 1, inx2 = 2,
       xlab(names(plstbl)[6])+
       ylab(names(plstbl)[7])+
       guides(colour=guide_legend(title="Time (min)"),
-             shape=guide_legend(title="Treatement"))
+             shape=guide_legend(title="Treatement"))+
+      scale_colour_brewer(palette="RdYlGn")
   } else if (setcolour == "treatment") {
     plsgg <- ggplot(plstbl, aes(plstbl[,6], plstbl[,7],shape=time, colour=treatment))
     plsgg+
@@ -73,7 +74,8 @@ plot_PLS_scoresKB <- function(df, inx1 = 1, inx2 = 2,
       xlab(names(plstbl)[6])+
       ylab(names(plstbl)[7])+
       guides(colour=guide_legend(title="Treatment"),
-             shape=guide_legend(title="Time (min)"))
+             shape=guide_legend(title="Time (min)"))+
+      scale_colour_brewer(palette="Set1")
   } #if END
   
 } #function END
