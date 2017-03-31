@@ -68,8 +68,8 @@ plot_PCA_scoresKB <- function(df, inx1 = 1, inx2 = 2,
     mutate(time = as.character(time)) %>%
     arrange(sample_ID)
   pcatbl$time <-  reorder(pcatbl$time, order(pcatbl$sample_ID))
-  names(pcatbl)[6] <- paste("Component", inx1, "(", round(100*pca$Xvar[inx1]/pca$Xtotvar, 1), "%)")
-  names(pcatbl)[7] <- paste("Component", inx2, "(", round(100*pca$Xvar[inx2]/pca$Xtotvar, 1), "%)")
+  names(pcatbl)[6] <- paste("Component", inx1, "(", round(100*pca$variance[inx1], 1), "%)");
+  names(pcatbl)[7] <- paste("Component", inx2, "(", round(100*pca$variance[inx2], 1), "%)");
   
   #Prepare ggplot object and plot pca scores
   if (setcolour == "time") {
@@ -81,7 +81,8 @@ plot_PCA_scoresKB <- function(df, inx1 = 1, inx2 = 2,
       xlab(names(pcatbl)[6])+
       ylab(names(pcatbl)[7])+
       guides(colour=guide_legend(title="Time (min)"),
-             shape=guide_legend(title="Treatement"))
+             shape=guide_legend(title="Treatement"))+
+      scale_colour_brewer(palette="RdYlGn")
   } else if (setcolour == "treatment") {
     pcagg <- ggplot(pcatbl, aes(pcatbl[,6], pcatbl[,7],shape=time, colour=treatment))
     pcagg+
@@ -91,7 +92,8 @@ plot_PCA_scoresKB <- function(df, inx1 = 1, inx2 = 2,
       xlab(names(pcatbl)[6])+
       ylab(names(pcatbl)[7])+
       guides(colour=guide_legend(title="Treatment"),
-             shape=guide_legend(title="Time (min)"))
+             shape=guide_legend(title="Time (min)"))+
+      scale_colour_brewer(palette="Set1")
   } #if END
   
 } #function END
