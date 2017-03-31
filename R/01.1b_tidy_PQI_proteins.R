@@ -21,7 +21,7 @@ tidy_PQI_proteins <- function(file) {
   
   
   # Change the future variable names in line 3
-  df[3, 1:5] <- c("peak_ID", "Peptide_count", "Unique_peptides", "Score", "Description")
+  df[3, 1:9] <- c("peak_ID", "Peptide_count", "Unique_peptides", "Score","5","6","7","8", "Description")
   
   # Data about samples
   sampleData <-
@@ -81,7 +81,7 @@ tidy_PQI_proteins <- function(file) {
   # Peak information table
   peakData <-
     df %>%
-    select(1:5) %>%
+    select(1:4,9) %>%
     setNames(.[3, ]) %>%
     slice(-(1:3)) %>%
     distinct() %>%
