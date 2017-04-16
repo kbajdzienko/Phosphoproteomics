@@ -70,3 +70,15 @@ filter_phos_conf <- function(df, score_threshold = 5) {
   df$intData <- anti_join(df$intData, shitpeaks)
   return(df)
 }
+
+filter_nonphos <- function(df){
+  
+  shitpeaks <-
+    df$peakData %>%
+    filter(!grepl("Phos", Modifications)) %>%
+    select(peak_ID)
+  
+  df$peakData <- anti_join(df$peakData, shitpeaks)
+  df$intData <- anti_join(df$intData, shitpeaks)
+  return(df)
+}
