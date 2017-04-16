@@ -12,6 +12,7 @@ make_annID <- function(df, mascot_file) {
            Sequence = pep_seq,
            Score = pep_score,
            Neutral_mass = pep_exp_mr) %>%
+    mutate(Accession = sub("\\.\\d","",Accession))%>%
     select(Accession, Sequence, pep_miss, pep_start, pep_end) %>%
     distinct()
 
@@ -41,7 +42,7 @@ make_annID <- function(df, mascot_file) {
   # with position number in protein
   aaposMerge <- function(sequence, pep_start, phosph_pos) {
     paste0(unlist(strsplit(sequence, ""))[phosph_pos],
-           pep_start + phosph_pos,
+           pep_start + phosph_pos - 1,
            collapse = "_")
   }
 
