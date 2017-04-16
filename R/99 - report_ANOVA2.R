@@ -4,8 +4,10 @@
 # p.cor - method of p-value correction, can be "holm", "hochberg", "hommel",
 # "bonferroni", "BH", "BY", "fdr", "none"
 
-anova2 <- function (df, p.cor = "fdr") {
+anova2 <- function (df, p.cor = "fdr", data="annInt") {
 
+  match.arg(data, c("int", "annInt"))
+  
   # Function, conducting two-way ANOVA/ANCOVA on a subset data frame
   # and getting three p-values
   pv.anova2 <- function(ddf) {
@@ -14,22 +16,36 @@ anova2 <- function (df, p.cor = "fdr") {
       unlist() %>%
       .[17:19]
   }
-
+if(data == "int"){
   pv_df <-
     right_join(df$intData, df$sampleData) %>%
     ddply("peak_ID", pv.anova2) %>%
     tbl_df() %>%
     setNames(c("peak_ID", "pv_treatment", "pv_time", "pv_inter")) %>%
     mutate_at(vars(-peak_ID), p.adjust, method = p.cor)
-
+}
+else if (data == "annInt"){
+  pv_df <-
+    right_join(df$annIntData, df$sampleData) %>%
+    ddply("ann_ID", pv.anova2) %>%
+    tbl_df() %>%
+    setNames(c("ann_ID", "pv_treatment", "pv_time", "pv_inter")) %>%
+    mutate_at(vars(-ann_ID), p.adjust, method = p.cor)
+  
+}
   return(pv_df)
 }
 
 # Function plotting two-way ANOVA venn diagram of significantly changing features
 
-plot_venn_anova2 <- function(df, threshold = 0.05, p.cor = "fdr") {
+plot_venn_anova2 <- function(df, threshold = 0.05, p.cor = "fdr", data="annInt") {
+  match.arg(data, c("int", "annInt"))
   pv_df <- anova2(df, p.cor)
+  if (data=="int"){
   venn_list <- lapply(pv_df[-1], function(x) pv_df$peak_ID[x <= 0.05])
+  }
+  else if (data=="annInt"){
+    venn_list <- lapply(pv_df[-1], function(x) pv_df$ann_ID[x <= 0.05])}
   
   venn <- VennDiagram::venn.diagram(venn_list,
                             category.names = c("Treatment", "Time", "Interaction"),
@@ -57,7 +73,7 @@ plot_venn_anova2 <- function(df, threshold = 0.05, p.cor = "fdr") {
                             filename = NULL,
                             rotation = 1)
   
-  grid.arrange(gTree(children=venn) )
+  gridExtra::grid.arrange(grid::gTree(children=venn) )
                #top=textGrob("Two-way ANOVA: significant features", gp=gpar(fontsize=20,fontfamily="serif"))
                  
 }
