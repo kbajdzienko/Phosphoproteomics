@@ -85,6 +85,7 @@ tidy_PQI <- function(file, abundance = "Raw") {
     slice(-(1:3)) %>%
     distinct() %>%
     mutate(peak_ID = rename_dupl(.$peak_ID)) %>%
+    mutate(Accession = sub("\\.\\d","",Accession))%>%
     mutate_at(vars(RT, Neutral_mass, Score), as.numeric) %>%
     arrange(peak_ID)
 
