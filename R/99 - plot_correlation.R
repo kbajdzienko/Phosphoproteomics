@@ -1,5 +1,10 @@
 plot_correlation <- function(df){
   
+  get_upper_tri <- function(cor_mat){
+    cor_mat[upper.tri(cor_mat)]<- NA
+    return(cor_mat)
+  }
+  
   df1_mat <- intMatrix(df)
   
   sID <- df$sampleData %>% 
@@ -8,22 +13,25 @@ plot_correlation <- function(df){
   
   #Calculate correlation matrix
   cor_mat <- cor(df1_mat, use="pairwise.complete.obs", method="pearson") %>%
-    reshape2::melt() %>% 
+    get_upper_tri() %>%
+    reshape2::melt(na.rm=TRUE)%>% 
     mutate(sample_ID = as.character(Var1), sample_ID2 = as.character(Var2)) %>%
     left_join(df$sampleData) %>%
-    select(sample_ID, sample_ID2, group, value) %>%
+    select(sample_ID, sample_ID2, group, value)%>%
     left_join(sID) %>%
-    mutate(sample_ID = paste(group,sample_ID, sep="_"),sample_ID2 = paste(group2,sample_ID2, sep="_")) %>%
-    arrange(group, group2)
+    #mutate(sample_ID = paste(group,sample_ID, sep="_"),sample_ID2 = paste(group2,sample_ID2, sep="_"))
+      arrange(group, group2)
+  #cor_mat$sample_ID <- reorder(cor_mat$sample_ID, order(cor_mat$group))
+  #cor_mat$sample_ID2 <- reorder(cor_mat$sample_ID2, order(cor_mat$group2))
   
-  ggplot(data = cor_mat, aes(sample_ID, sample_ID2,fill = value))+
+  ggplot(data = cor_mat, aes(x=sample_ID, y=sample_ID2,fill = value))+
     geom_tile(color = "white")+
-    geom_text(aes(sample_ID,sample_ID2, label = round(value, digits = 2)), color = "black", size = 3) +
+    #geom_text(aes(sample_ID,sample_ID2, label = round(value, digits = 2)), color = "black", size = 3) +
     scale_fill_gradient(low = "white", high = "red", 
                         limit = c(0,1), space = "Lab", 
                         name="Pearson\nCorrelation") +
-    #scale_x_discrete(labels = distinct(cor_mat, sample_ID, .keep_all = T)$sample_ID) +
-    #scale_y_discrete(labels = distinct(cor_mat, sample_ID2, .keep_all = T)$sample_ID2) +
+    scale_x_discrete(labels = distinct(cor_mat,sample_ID, .keep_all=T)$group) +
+    scale_y_discrete(labels = distinct(cor_mat,sample_ID2, .keep_all=T)$group2, position = "right") +
     theme_minimal()+ 
     theme(axis.text.x = element_text(angle = 45, vjust = 1, 
                                      size = 10, hjust = 1))+
@@ -44,6 +52,11 @@ plot_correlation <- function(df){
 
 plot_correlation_ann <- function(df){
   
+  get_upper_tri <- function(cor_mat){
+    cor_mat[upper.tri(cor_mat)]<- NA
+    return(cor_mat)
+  }
+  
   df1_mat <- intMatrix_ann(df)
   
   sID <- df$sampleData %>% 
@@ -52,22 +65,27 @@ plot_correlation_ann <- function(df){
   
   #Calculate correlation matrix
   cor_mat <- cor(df1_mat, use="pairwise.complete.obs", method="pearson") %>%
-    reshape2::melt() %>% 
+    #Here should be a line that sorts rows and columns to group the sample IDs properly (not alphabetically but per replicate group)
+    get_upper_tri() %>%
+    reshape2::melt(na.rm=TRUE)%>% 
     mutate(sample_ID = as.character(Var1), sample_ID2 = as.character(Var2)) %>%
     left_join(df$sampleData) %>%
-    select(sample_ID, sample_ID2, group, value) %>%
+    select(sample_ID, sample_ID2, group, value)%>%
     left_join(sID) %>%
-    mutate(sample_ID = paste(group,sample_ID, sep="_"),sample_ID2 = paste(group2,sample_ID2, sep="_")) %>%
+    #mutate(sample_ID = paste(group,sample_ID, sep="_"),sample_ID2 = paste(group2,sample_ID2, sep="_"))
     arrange(group, group2)
+  #Set order of samples according to the group (ggplot will otherwise arrange them alphabetically)
+  #cor_mat$sample_ID <- reorder(cor_mat$sample_ID, order(cor_mat$group))
+  #cor_mat$sample_ID2 <- reorder(cor_mat$sample_ID2, order(cor_mat$group2))
   
-  ggplot(data = cor_mat, aes(sample_ID, sample_ID2,fill = value))+
+  ggplot(data = cor_mat, aes(x=sample_ID, y=sample_ID2,fill = value))+
     geom_tile(color = "white")+
-    geom_text(aes(sample_ID,sample_ID2, label = round(value, digits = 2)), color = "black", size = 3) +
+    #geom_text(aes(sample_ID,sample_ID2, label = round(value, digits = 2)), color = "black", size = 3) +
     scale_fill_gradient(low = "white", high = "red", 
                         limit = c(0,1), space = "Lab", 
                         name="Pearson\nCorrelation") +
-    #scale_x_discrete(labels = distinct(cor_mat, sample_ID, .keep_all = T)$sample_ID) +
-    #scale_y_discrete(labels = distinct(cor_mat, sample_ID2, .keep_all = T)$sample_ID2) +
+    #scale_x_discrete(labels = distinct(cor_mat,sample_ID, .keep_all=T)$group) +
+    scale_y_discrete(labels = distinct(cor_mat,sample_ID2, .keep_all=T)$group2, position = "right") +
     theme_minimal()+ 
     theme(axis.text.x = element_text(angle = 45, vjust = 1, 
                                      size = 10, hjust = 1))+
@@ -83,5 +101,5 @@ plot_correlation_ann <- function(df){
       #legend.position = c(0.6, 0.7),
       legend.direction = "vertical")+
     guides(fill = guide_colorbar(barwidth = 1, barheight = 7,
-                                 title.position = "bottom", title.hjust = 0.5,))
+                                 title.position = "bottom", title.hjust = 0.5))
 }
