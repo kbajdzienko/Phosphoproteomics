@@ -4,7 +4,6 @@ if (!require("tidyverse", character.only = T)) install.packages("tidyverse")
 
 library(plyr)
 library(tidyverse)
-library(ggplot2)
 
 
 source("R/00 - data_processing_pipeline.R")

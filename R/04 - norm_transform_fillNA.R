@@ -18,6 +18,14 @@ normMedian_ann <- function(df) {
   return(df)
 }
 
+normMedian2 <- function(df) {
+  group_by(df$intData, sample_ID) %>%
+    mutate(total = median(intensity, na.rm=T))%>%
+    ungroup()%>% mutate(intensity = log2(intensity,na.rm=T), total = log2(total)) %>%
+    group_by(sample_ID, peak_ID) %>%
+    mutate(intensity = int - total) %>%
+    ungroup() %>% mutate(int = 2^int, total=2^total, norm_int=2^norm_int)
+}
 # Normalization by mean intensity of all the peaks in sample
 normMean <- function(df) {
   total.mean <- mean(df$intData$intensity, na.rm = T)

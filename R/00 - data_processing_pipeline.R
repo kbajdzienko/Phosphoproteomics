@@ -22,11 +22,11 @@ dtt_import <- function(peptide_file, mascot_file, ions_file,
 dtt_clean <- function(
                 df,  
                 NAimputation = "ppca",
-                score = 29
+                score = 25
                 ) {
   
   
-  df <- filter_phos_conf(df, score_threshold = 70)
+  df <- filter_phos_conf(df, score_threshold = 50)
   
   df <- filter_score(df, score=25)
   

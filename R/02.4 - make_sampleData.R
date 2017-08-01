@@ -7,15 +7,15 @@ make_sampleData <- function(df) {
     df$sampleData %>%
     mutate(group = gsub("(?=\\b[[:digit:]]{2}$)", "0", group, perl = TRUE)) %>%
     mutate(group = gsub("(?=[[:digit:]]{3})", "", group, perl = TRUE)) %>%
-    mutate(sample_ID = stringr::str_extract(sample_ID, "\\d{1,3}$")) %>%
+    #mutate(sample_ID = stringr::str_extract(sample_ID, "\\d{1,3}$")) %>%
     mutate(treatment = stringr::str_extract(group, "[[:alpha:]]{2,5}")) %>%
     mutate(time = na.to.zero(as.integer(gsub("^.*-", "", group)))) %>%
-    arrange(as.numeric(sample_ID))
+    arrange(sample_ID)
     
-  df$intData <- 
-    df$intData %>%
-    mutate(sample_ID = stringr::str_extract(sample_ID, "\\d{1,3}$"))
-  
+  # df$intData <- 
+  #   df$intData %>%
+  #   mutate(sample_ID = stringr::str_extract(sample_ID, "\\d{1,3}$"))
+  # 
   # Add colors
   timeline <- sort(unique(sampleData$time))
   colorVector <- colorRampPalette(c("white", "green"))(length(timeline))
@@ -34,8 +34,8 @@ make_sampleData_exp16 <- function(df) {
   sampleData <-
     df$sampleData %>%
     mutate(group = gsub("Starvation", "-000", group)) %>%
-    # mutate(sample_ID = paste0(gsub("-", "_", group),
-    #                          gsub("^.*_", "_", sample_ID))) %>%
+    mutate(sample_ID = paste0(gsub("-", "_", group),
+                             gsub("^.*_", "_", sample_ID))) %>%
     mutate(treatment = gsub("-[[:alnum:]]*$", "", group)) %>%
     mutate(time = na.to.zero(as.integer(gsub("\\D", "", group))))
 
