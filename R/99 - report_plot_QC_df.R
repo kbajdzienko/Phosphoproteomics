@@ -8,7 +8,7 @@ QC_stat <- function(df) {
 
   # Phosphorylated proteins
   prot.phos.num <-
-    filter(df$peakData, grepl("Phosp", Modifications)) %>%
+    filter(df$peakData, grepl("Phos", Modifications)) %>%
     summarize('(P)-proteins' = n_distinct(Accession)) %>%
     '/'(prot.num/100) %>%
     mutate_all(funs(paste0(round(., digits = 1), "%")))
@@ -18,8 +18,8 @@ QC_stat <- function(df) {
 
   # Phosphorylated peptides
   pep.phos.num <-
-    filter(df$peakData, grepl("Phosp", Modifications)) %>%
-    summarize('(P)-peptides' = n_distinct(Sequence, Modifications)) %>%
+    filter(df$peakData, grepl("Phos", Modifications)) %>%
+    summarize('(P)-peptides' = n_distinct(ann_ID)) %>%
     '/'(pep.num/100) %>%
     mutate_all(funs(paste0(round(., digits = 1), "%")))
 
@@ -29,6 +29,7 @@ QC_stat <- function(df) {
     filter(grepl("_[STY]", ann_ID)) %>%
     group_by(Accession) %>%
     summarize(n_sites = n()) %>%
+    ungroup()%>%
     summarize('(P)-Sites' = sum(n_sites), 'Sites/protein' = sum(n_sites)/n())
 
   return(bind_cols(prot.num,

@@ -19,7 +19,7 @@ anova2 <- function (df, p.cor = "fdr", data="annInt") {
 if(data == "int"){
   pv_df <-
     right_join(df$intData, df$sampleData) %>%
-    ddply("peak_ID", pv.anova2) %>%
+    plyr::ddply("peak_ID", pv.anova2) %>%
     tbl_df() %>%
     setNames(c("peak_ID", "pv_treatment", "pv_time", "pv_inter")) %>%
     mutate_at(vars(-peak_ID), p.adjust, method = p.cor)
@@ -27,7 +27,7 @@ if(data == "int"){
 else if (data == "annInt"){
   pv_df <-
     right_join(df$annIntData, df$sampleData) %>%
-    ddply("ann_ID", pv.anova2) %>%
+    plyr::ddply("ann_ID", pv.anova2) %>%
     tbl_df() %>%
     setNames(c("ann_ID", "pv_treatment", "pv_time", "pv_inter")) %>%
     mutate_at(vars(-ann_ID), p.adjust, method = p.cor)
