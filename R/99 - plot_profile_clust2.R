@@ -11,7 +11,7 @@ plot_fuzz <- function(df, centers, m = fuzz_m_estimate(df), min.memberhip = 0,
   cl <- fuzz_clust(df, centers, m)
 
   # Add cluster number to intData
-  data <- mutate(df$intData, cluster = cl$cluster[peak_ID])
+  data <- df$annIntData %>% mutate(cluster = cl$cluster[ann_ID])
 
   # Replace all membership below min by negative value
   cl$membership[cl$membership < min.memberhip] <- -1
@@ -30,12 +30,12 @@ plot_fuzz <- function(df, centers, m = fuzz_m_estimate(df), min.memberhip = 0,
     # Add colour to data and leave only peaks from certain cluster
     tmp <-
       data %>%
-      mutate(colour = cl$color[peak_ID, cl.idx]) %>%
+      mutate(colour = cl$color[ann_ID, cl.idx]) %>%
       filter(cluster == cl.idx)
 
     plots[[cl.idx]] <-
       ggplot(data = tmp,
-             aes(x = sample_ID, y = intensity, group = peak_ID, colour = colour)) +
+             aes(x = sample_ID, y = intensity, group = ann_ID, colour = colour)) +
       geom_line() +
       guides(colour = FALSE) +
       labs(title = paste("Cluster", cl.idx)) +
@@ -70,8 +70,8 @@ fuzz_clust <- function(df, centers, m = fuzz_m_estimate(df), ...){
 
 # Estimate m
 fuzz_m_estimate <- function(df) {
-  N <- nrow(df$intData)
-  D <- ncol(df$intData)
+  N <- nrow(df$annIntData)
+  D <- ncol(df$annIntData)
   m.sj <- 1 + (1418/N + 22.05)*D^(-2) + (12.33/N +0.243)*D^(-0.0406*log(N) - 0.1134)
   return(m.sj)
 }

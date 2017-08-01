@@ -48,23 +48,23 @@ plot_PCA_scores <- function(df, inx1 = 1, inx2 = 2,
 
 plot_PCA_scoresKB <- function(df, inx1 = 1, inx2 = 2,
                               reg = 0.95, show = TRUE,
-                              setcolour = "time") {
+                              setcolour = "time",  plot_title = "PCA of") {
   
   match.arg(setcolour, c("time", "treatment"))
   
   #Prepare df if not cleaned
-  df <- filter_NA_Mann(df)
-  df <- fillNA(df)
-  df <- logTransform(df)
-  df <- normScale(df)
-  #Perform pcaDA
+  # df <- filter_NA_Mann(df)
+  # df <- fillNA(df)
+  # df <- logTransform(df)
+  # df <- normScale(df)
+  # #Perform pcaDA
   pca <- PCA_anal(df)
   #Extract scores for 2 specified components and arrange them with sample data 
   pcatbl <- df$sampleData %>% 
     arrange(sample_ID) %>% 
     cbind(pca$x[,inx1]) %>% 
     cbind(pca$x[,inx2]) %>%
-    mutate(sample_ID = as.numeric(sample_ID)) %>% 
+    mutate(sample_ID = as.numeric(stringr::str_extract(sample_ID, "\\d{1,3}$"))) %>% 
     mutate(time = as.character(time)) %>%
     arrange(sample_ID)
   pcatbl$time <-  reorder(pcatbl$time, order(pcatbl$sample_ID))
@@ -75,14 +75,15 @@ plot_PCA_scoresKB <- function(df, inx1 = 1, inx2 = 2,
   if (setcolour == "time") {
     pcagg <- ggplot(pcatbl, aes(pcatbl[,6], pcatbl[,7],shape=treatment, colour=time))
     pcagg+
-      geom_point()+
+      geom_point(size=2)+
       geom_text(aes(label=sample_ID),hjust=-0.4, vjust=-0.5, size=3)+
       theme_bw()+
       xlab(names(pcatbl)[6])+
       ylab(names(pcatbl)[7])+
+      labs(title = plot_title)+
       guides(colour=guide_legend(title="Time (min)"),
-             shape=guide_legend(title="Treatement"))+
-      scale_colour_brewer(palette="RdYlGn")
+             shape=guide_legend(title="Treatment"))+
+      scale_colour_brewer(palette="Set1")
   } else if (setcolour == "treatment") {
     pcagg <- ggplot(pcatbl, aes(pcatbl[,6], pcatbl[,7],shape=time, colour=treatment))
     pcagg+
@@ -91,6 +92,7 @@ plot_PCA_scoresKB <- function(df, inx1 = 1, inx2 = 2,
       theme_bw()+
       xlab(names(pcatbl)[6])+
       ylab(names(pcatbl)[7])+
+      labs(title = plot_title)+
       guides(colour=guide_legend(title="Treatment"),
              shape=guide_legend(title="Time (min)"))+
       scale_colour_brewer(palette="Set1")
@@ -102,11 +104,12 @@ PCA_anal <-function(df){
   pca <-
     df %>%
     filter_NA() %>%
-    fillNA() %>%
+    #fillNA() %>%
     logTransform() %>%
     normScale() %>%
     intMatrix() %>%
     t() %>%
+    na.to.zero() %>%
     prcomp(center = T, scale = T)
 
   # obtain variance explained

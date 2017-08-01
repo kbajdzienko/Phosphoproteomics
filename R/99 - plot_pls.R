@@ -8,8 +8,7 @@
 # score plot
 plot_PLS_scores <- function(df, inx1 = 1, inx2 = 2,
                             reg = 0.95, show = TRUE) {
-  df <- logTransform(df)
-  df <- normScale(df)
+  
   
   pls <- PLS_anal(df)
   xlabel = paste("Component", inx1, "(", round(100*pls$Xvar[inx1]/pls$Xtotvar, 1), "%)");
@@ -20,7 +19,7 @@ plot_PLS_scores <- function(df, inx1 = 1, inx2 = 2,
 
   par(mar = c(5,5,3,3));
 
-  color <- mapvalues(row.names(pls$model$datmat),
+  color <- plyr::mapvalues(row.names(pls$model$datmat),
                      df$sampleData$sample_ID,
                      df$sampleData$color)
   plot(pc1, pc2, xlab = xlabel, ylab = ylabel, type = 'n', main = "Scores Plot")
@@ -30,17 +29,14 @@ plot_PLS_scores <- function(df, inx1 = 1, inx2 = 2,
 #PLS score plot with customizable graphical parameters
 plot_PLS_scoresKB <- function(df, inx1 = 1, inx2 = 2,
                              reg = 0.95, show = TRUE,
-                             setcolour = "time") {
+                             setcolour = "time", intdata="int", plot_title = "PLS of") {
   
   match.arg(setcolour, c("time", "treatment"))
+  match.arg(intdata, c("int", "ann"))
   
-    #Prepare df if not cleaned
-  df <- filter_NA_Mann(df)
-  df <- fillNA(df)
-  df <- logTransform(df)
-  df <- normScale(df)
+   
   #Perform PLSDA
-  pls <- PLS_anal(df)
+  pls <- PLS_anal(df, data=intdata)
   #Extract scores for 2 specified components and arrange them with sample data 
   plstbl <- df$sampleData %>% 
     arrange(sample_ID) %>% 
@@ -58,10 +54,11 @@ plot_PLS_scoresKB <- function(df, inx1 = 1, inx2 = 2,
     plsgg <- ggplot(plstbl, aes(plstbl[,6], plstbl[,7],shape=treatment, colour=time))
     plsgg+
       geom_point()+
-      geom_text(aes(label=sample_ID),hjust=-0.4, vjust=-0.5, size=3)+
+      #geom_text(aes(label=sample_ID),hjust=-0.4, vjust=-0.5, size=3)+
       theme_bw()+
       xlab(names(plstbl)[6])+
       ylab(names(plstbl)[7])+
+      labs(title = plot_title)+
       guides(colour=guide_legend(title="Time (min)"),
              shape=guide_legend(title="Treatement"))+
       scale_colour_brewer(palette="RdYlGn")
@@ -69,10 +66,11 @@ plot_PLS_scoresKB <- function(df, inx1 = 1, inx2 = 2,
     plsgg <- ggplot(plstbl, aes(plstbl[,6], plstbl[,7],shape=time, colour=treatment))
     plsgg+
       geom_point()+
-      geom_text(aes(label=sample_ID),hjust=-0.4, vjust=-0.5, size=3)+
+     # geom_text(aes(label=sample_ID),hjust=-0.4, vjust=-0.5, size=3)+
       theme_bw()+
       xlab(names(plstbl)[6])+
       ylab(names(plstbl)[7])+
+      labs(title = plot_title)+
       guides(colour=guide_legend(title="Treatment"),
              shape=guide_legend(title="Time (min)"))+
       scale_colour_brewer(palette="Set1")
@@ -93,15 +91,29 @@ plot_PLS_scoresKB <- function(df, inx1 = 1, inx2 = 2,
 # pls analysis using oscorespls so that VIP can be calculated
 # note: the VIP is calculated only after PLSDA-CV is performed
 # to determine the best # of comp. used for VIP
-PLS_anal <- function(df) {
+PLS_anal <- function(df, data="int") {
+  match.arg(data, c("int", "ann"))
+  if(data == "int"){
+    df <- filter_NA_Mann(df)
+    df <- fillNA(df)
+    df <- logTransform(df)
+    df <- normScale(df)
   datmat <-
     df %>%
     filter_NA() %>%
     fillNA() %>%
     intMatrix() %>%
-    t()
+    t()}
+  else if (data == "ann")
+  {
+   datmat <-
+      df %>%
+      logTransform_ann()%>%
+      normScale_ann() %>%
+      intMatrix_ann() %>%
+      t()}
   # Get groupnames as factor
-  group <- mapvalues(row.names(datmat),
+  group <- plyr::mapvalues(row.names(datmat),
                      df$sampleData$sample_ID,
                      as.numeric(as.factor(df$sampleData$group)) - 1)
   pls <- pls::plsr(group~datmat, method = 'oscorespls');

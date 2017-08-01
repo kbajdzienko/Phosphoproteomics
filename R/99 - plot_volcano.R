@@ -2,10 +2,10 @@
 
 plot_peak_volcano <- function(df, group1, group2,
                          method = "t.test",
-                         FC.threshold = 2,
+                         FC.threshold = 1.5,
                          p.threshold = 0.05) {
 
-  match.arg(method, c("t.test", "wilcox.test"))
+  match.arg(method, c("t.test(var.equal=TRUE)", "wilcox.test"))
 
   if (!all(c(group1, group2) %in% df$sampleData$group))
     stop("Selected group names are not found")
@@ -19,7 +19,8 @@ plot_peak_volcano <- function(df, group1, group2,
               FC = mean(intensity[group == group1], na.rm = T)/mean(intensity[group == group2], na.rm = T)) %>%
     mutate(log10p = -log10(p.value),
            logFC = log2(FC)) %>%
-    mutate(signif = abs(p.value) < p.threshold & abs(logFC) > log2(FC.threshold))
+    mutate(q.value = p.adjust(p.value, "fdr"),
+           signif = abs(q.value) < p.threshold & abs(logFC) > log2(FC.threshold))
 
   ggplot(volcano, aes(x = logFC, y = log10p, color = signif)) +
     geom_point(size = 1.5) +
@@ -45,7 +46,7 @@ plot_peak_volcano <- function(df, group1, group2,
 
 plot_ann_volcano <- function(df, group1, group2,
                              method = "t.test",
-                             FC.threshold = 2,
+                             FC.threshold = 1.5,
                              p.threshold = 0.05) {
   
   match.arg(method, c("t.test", "wilcox.test"))
@@ -61,8 +62,9 @@ plot_ann_volcano <- function(df, group1, group2,
     summarize(p.value = do.call(method, list(intensity[group == group1], intensity[group == group2]))$p.value,
               FC = mean(intensity[group == group1], na.rm = T)/mean(intensity[group == group2], na.rm = T)) %>%
     mutate(log10p = -log10(p.value),
-           logFC = log2(FC)) %>%
-    mutate(signif = abs(p.value) < p.threshold & abs(logFC) > log2(FC.threshold))
+           logFC = log2(FC),
+           q.value = p.adjust(p.value)) %>%
+    mutate(signif = abs(q.value) < p.threshold & abs(logFC) > log2(FC.threshold))
   
   ggplot(volcano, aes(x = logFC, y = log10p, color = signif)) +
     geom_point(size = 1.5) +
@@ -72,6 +74,8 @@ plot_ann_volcano <- function(df, group1, group2,
     scale_x_continuous('log2(FC)', limits = c(-1, 1)*max(abs(volcano$logFC))) +
     guides(colour = FALSE) +
     labs(title = paste(group1, "/", group2)) +
+    xlim(-10,10)+
+    ylim(0,5)+
     theme(
       panel.background = element_rect(fill = 'white', colour = "black"),
       panel.grid.minor = element_line(colour = "grey"),
