@@ -18,14 +18,6 @@ normMedian_ann <- function(df) {
   return(df)
 }
 
-normMedian2 <- function(df) {
-  group_by(df$intData, sample_ID) %>%
-    mutate(total = median(intensity, na.rm=T))%>%
-    ungroup()%>% mutate(intensity = log2(intensity,na.rm=T), total = log2(total)) %>%
-    group_by(sample_ID, peak_ID) %>%
-    mutate(intensity = int - total) %>%
-    ungroup() %>% mutate(int = 2^int, total=2^total, norm_int=2^norm_int)
-}
 # Normalization by mean intensity of all the peaks in sample
 normMean <- function(df) {
   total.mean <- mean(df$intData$intensity, na.rm = T)
@@ -48,7 +40,7 @@ normScale <- function(df, method = "auto") {
     df$intData %>%
     group_by(peak_ID) %>%
     mutate_at(vars(intensity), method) %>%
-    ungroup()
+    ungroup() 
   return(df)
 }
 normScale_ann <- function(df, method = "auto") {
@@ -84,6 +76,27 @@ fillNA <- function(df, method = "ppca") {
 
   df$intData <- intData(t(intMatrix))
 
+  return(df)
+}
+
+fillNA_phos <- function(df, method = "ppca") {
+  match.arg(method, c("ppca", "bpca"))
+  if (!any(is.na(df$annIntData$intensity))) {
+    warning("No NA detected")
+    return(df)
+  }
+  
+  annIntMatrix <- t(intMatrix_ann(df))
+  if (!is.log(annIntMatrix)) annIntMatrix <- log10(annIntMatrix)
+  
+  annIntMatrix[is.na(annIntMatrix)] <-
+    pcaMethods::completeObs(
+      pcaMethods::pca(annIntMatrix, center = T, method = method))[is.na(annIntMatrix)]
+  
+  if (!is.log(intMatrix_ann(df))) annIntMatrix <- 10^annIntMatrix
+  
+  df$annIntData <- intData_ann(t(annIntMatrix))
+  
   return(df)
 }
 

@@ -42,15 +42,15 @@ tidy_PQI_proteins <- function(file) {
   
   sampleData <-
     sampleData %>%
-    mutate(sample_ID = paste(substr(group, 1, 3),
-                             gsub("\\D", "", group),
-                             sample_ID,
-                             sep = "_")) %>%
+    # mutate(sample_ID = paste(substr(group, 1, 3),
+    #                          gsub("\\D", "", group),
+    #                          sample_ID,
+    #                          sep = "_")) %>%
     mutate(group = gsub("(?=\\b[[:digit:]]{2}$)", "0", group, perl = TRUE)) %>%
     mutate(group = gsub("(?=[[:digit:]]{3})", "", group, perl = TRUE)) %>%
-    mutate(sample_ID = stringr::str_extract(sample_ID, "\\d{1,3}$")) %>%
-    mutate(treatment = stringr::str_extract(group, "[[:upper:]]{3,4}")) %>%
-    mutate(time = as.integer(gsub("^.*-", "", group)))
+    #mutate(sample_ID = stringr::str_extract(sample_ID, "\\d{1,3}$")) %>%
+    mutate(treatment = stringr::str_extract(group, "[[:upper:]]{2,4}")) %>%
+    mutate(time = as.numeric(gsub("^.*(-|_)", "", group)))
   
   
   # Funciton, adding _1, _2, _3, ... indexes to duplicated peak IDs
@@ -86,7 +86,7 @@ tidy_PQI_proteins <- function(file) {
     slice(-(1:3)) %>%
     distinct() %>%
     mutate(peak_ID = rename_dupl(.$peak_ID)) %>%
-    mutate(Accession = peak_ID)%>%
+    mutate(Accession = gsub(";.{1,}","",peak_ID))%>%
     mutate_at(vars(Peptide_count, Unique_peptides, Score), as.numeric) %>%
     arrange(peak_ID)
   

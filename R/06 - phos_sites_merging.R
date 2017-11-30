@@ -26,7 +26,7 @@ sitesMerge <- function(df) {
   mult_sites <-
     df$peakData %>%
     filter(grepl("_[[:alnum:]]+_", ann_ID)) %>%
-    ddply(.var = "peak_ID", splitSites) %>%
+    plyr::ddply(.var = "peak_ID", splitSites) %>%
     tbl_df() %>%
     bind_rows(filter(df$peakData, !grepl("_[[:alnum:]]+_", ann_ID)))
 

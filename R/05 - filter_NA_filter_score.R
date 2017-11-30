@@ -42,6 +42,23 @@ filter_NA_Mann <- function(df) {
   return(df)
 }
 
+filter_NA_Mann_phos <- function(df) {
+  shitpeaks <-
+    df$annIntData %>%
+    left_join(df$sampleData) %>%
+    mutate(intensity = zero.to.na(intensity)) %>%
+    group_by(ann_ID, group) %>%
+    summarize(non_NA = sum(!is.na(intensity))) %>%
+    group_by(ann_ID) %>%
+    filter(!(all(non_NA >= 2) | sum(non_NA >= 3)/n() > 0.75)) %>%
+    ungroup() %>%
+    select(ann_ID) %>%
+    distinct()
+  df$annData <- anti_join(df$annData, shitpeaks)
+  df$annIntData <- anti_join(df$annIntData, shitpeaks)
+  return(df)
+}
+
 # Filter peaks with Score less than the set threshold
 
 filter_score <- function(df, score_threshold = 5) {
