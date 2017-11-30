@@ -36,7 +36,7 @@ plot_PCA_scores <- function(df, inx1 = 1, inx2 = 2,
 
   op <- par(mar = c(5,5,3,3));
 
-  color <- mapvalues(names(pc1),
+  color <- plyr::mapvalues(names(pc1),
                      df$sampleData$sample_ID,
                      df$sampleData$color)
   plot(pc1, pc2, xlab = xlabel, ylab=ylabel, type='n', main="Scores Plot")
@@ -46,67 +46,51 @@ plot_PCA_scores <- function(df, inx1 = 1, inx2 = 2,
   par(op)
 }
 
-plot_PCA_scoresKB <- function(df, inx1 = 1, inx2 = 2,
-                              reg = 0.95, show = TRUE,
-                              setcolour = "time",  plot_title = "PCA of") {
+make_PCA_scoresKB <- function(df, data, inx1 = 1, inx2 = 2,
+                              reg = 0.95, show = TRUE) {
   
-  match.arg(setcolour, c("time", "treatment"))
+  match.arg(data, c("phospho", "protein"))
   
-  #Prepare df if not cleaned
-  # df <- filter_NA_Mann(df)
-  # df <- fillNA(df)
-  # df <- logTransform(df)
-  # df <- normScale(df)
-  # #Perform pcaDA
-  pca <- PCA_anal(df)
+  #Prepare data for PCA and perform PCA
+  if(data=="protein"){
+  pca <- PCA_anal(df)}
+  else if (data =="phospho"){
+    pca <- PCA_anal_ann(df)
+  }
   #Extract scores for 2 specified components and arrange them with sample data 
   pcatbl <- df$sampleData %>% 
     arrange(sample_ID) %>% 
     cbind(pca$x[,inx1]) %>% 
     cbind(pca$x[,inx2]) %>%
-    mutate(sample_ID = as.numeric(stringr::str_extract(sample_ID, "\\d{1,3}$"))) %>% 
-    mutate(time = as.character(time)) %>%
-    arrange(sample_ID)
-  pcatbl$time <-  reorder(pcatbl$time, order(pcatbl$sample_ID))
-  names(pcatbl)[6] <- paste("Component", inx1, "(", round(100*pca$variance[inx1], 1), "%)");
-  names(pcatbl)[7] <- paste("Component", inx2, "(", round(100*pca$variance[inx2], 1), "%)");
+    {if("color" %in% colnames(df$sampleData)) select(.,-color) else .}
   
-  #Prepare ggplot object and plot pca scores
-  if (setcolour == "time") {
-    pcagg <- ggplot(pcatbl, aes(pcatbl[,6], pcatbl[,7],shape=treatment, colour=time))
+  names(pcatbl)[5] <- paste("Component", inx1, "(", round(100*pca$variance[inx1], 1), "%)");
+  names(pcatbl)[6] <- paste("Component", inx2, "(", round(100*pca$variance[inx2], 1), "%)");
+  
+  return(pcatbl)
+}
+
+plot_PCA_scoresKB <- function(df, data="phospho", inx1=1,inx2=2) {
+  
+  pcatbl <- make_PCA_scoresKB(df, data=data, inx1=inx1, inx2=inx2)
+    pcagg <- ggplot(pcatbl, aes(pcatbl[,5], pcatbl[,6],shape=as.factor(time), colour=treatment))
     pcagg+
-      geom_point(size=2)+
-      geom_text(aes(label=sample_ID),hjust=-0.4, vjust=-0.5, size=3)+
+      geom_point(size=4)+
+      geom_text(aes(label=sample_ID),hjust="inward", vjust="inward", size=3)+
       theme_bw()+
-      xlab(names(pcatbl)[6])+
-      ylab(names(pcatbl)[7])+
-      labs(title = plot_title)+
-      guides(colour=guide_legend(title="Time (min)"),
-             shape=guide_legend(title="Treatment"))+
-      scale_colour_brewer(palette="Set1")
-  } else if (setcolour == "treatment") {
-    pcagg <- ggplot(pcatbl, aes(pcatbl[,6], pcatbl[,7],shape=time, colour=treatment))
-    pcagg+
-      geom_point()+
-      geom_text(aes(label=sample_ID),hjust=-0.4, vjust=-0.5, size=3)+
-      theme_bw()+
-      xlab(names(pcatbl)[6])+
-      ylab(names(pcatbl)[7])+
-      labs(title = plot_title)+
+      xlab(names(pcatbl)[5])+
+      ylab(names(pcatbl)[6])+
+      labs(title = "PCA")+
       guides(colour=guide_legend(title="Treatment"),
              shape=guide_legend(title="Time (min)"))+
       scale_colour_brewer(palette="Set1")
-  } #if END
-  
-} #function END
+ 
+
+}
 
 PCA_anal <-function(df){
   pca <-
     df %>%
-    filter_NA() %>%
-    #fillNA() %>%
-    logTransform() %>%
-    normScale() %>%
     intMatrix() %>%
     t() %>%
     na.to.zero() %>%
@@ -126,6 +110,28 @@ PCA_anal <-function(df){
   return(pca);
 }
 
+
+PCA_anal_ann <-function(df){
+  pca <-
+    df %>%
+    intMatrix_ann() %>%
+    t() %>%
+    na.to.zero() %>%
+    prcomp(center = T, scale = T)
+  
+  # obtain variance explained
+  sum.pca <- summary(pca);
+  imp.pca <- sum.pca$importance;
+  std.pca <- imp.pca[1,]; # standard deviation
+  var.pca <- imp.pca[2,]; # variance explained by each PC
+  cum.pca <- imp.pca[3,]; # cummulated variance explained
+  
+  # store the item to the pca object
+  pca <- append(pca, list(std = std.pca,
+                          variance = var.pca,
+                          cum.var = cum.pca))
+  return(pca);
+}
 
 
 #

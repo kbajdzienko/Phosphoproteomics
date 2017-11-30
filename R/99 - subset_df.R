@@ -6,7 +6,7 @@ subset_df_samples <- function(df, pattern, data="psite") {
   if(data=="psite"){
   shitsamples <- filter(df$sampleData, !grepl(pattern, group)) %>% select(sample_ID)
   df$sampleData <- anti_join(df$sampleData, shitsamples)
-  df$intData <- anti_join(df$intData, shitsamples)
+  #df$intData <- anti_join(df$intData, shitsamples)
   df$annIntData <- anti_join(df$annIntData, shitsamples)}
   else if(data=="protein"){
   shitsamples <- filter(df$sampleData, !grepl(pattern, group)) %>% select(sample_ID)
@@ -19,18 +19,29 @@ subset_df_samples <- function(df, pattern, data="psite") {
 
 subset_df_acc <- function(df, acc_list,data="psite") {
   
-  match.arg(data, c("psite","protein", "peak_ID"))
+  match.arg(data, c("psite","protein", "peak_ID", "ann_ID"))
   
   if(data=="psite"){
-  df$annData <- filter(df$annData, Accession %in% acc_list)
-  df$peakData <- filter(df$peakData, Accession %in% acc_list)
-  df$intData <- left_join(df$peakData,df$intData, by = "peak_ID") %>% select(peak_ID, sample_ID, intensity)
-  df$annIntData <- left_join(df$annData,df$annIntData, by = "ann_ID") %>% select(ann_ID, sample_ID, intensity)}
+    df$annData <- filter(df$annData, Accession %in% acc_list)
+    df$peakData <- filter(df$peakData, Accession %in% acc_list)
+    df$intData <- left_join(df$peakData,df$intData, by = "peak_ID") %>% 
+      select(peak_ID, sample_ID, intensity)
+    df$annIntData <- left_join(df$annData,df$annIntData, by = "ann_ID") %>% 
+      select(ann_ID, sample_ID, intensity)}
+  
   else if(data=="protein"){
     df$peakData <- filter(df$peakData, Accession %in% acc_list)
-  df$intData <- left_join(df$peakData,df$intData, by = "peak_ID") %>% select(peak_ID, sample_ID, intensity)}
+    df$intData <- left_join(df$peakData,df$intData, by = "peak_ID") %>% 
+      select(peak_ID, sample_ID, intensity)}
+  
   else if(data=="peak_ID"){
     df$peakData <- filter(df$peakData, peak_ID %in% acc_list)
-    df$intData <- left_join(df$peakData,df$intData, by = "peak_ID") %>% select(peak_ID, sample_ID, intensity)}
+    df$intData <- left_join(df$peakData,df$intData, by = "peak_ID") %>% 
+      select(peak_ID, sample_ID, intensity)}
+  
+  else if(data == "ann_ID"){
+    df$annData <- filter(df$annData, ann_ID %in% acc_list)
+    df$peakData <- filter(df$peakData, ann_ID %in% acc_list)
+    df$annIntData <- filter(df$annIntData, ann_ID %in% acc_list)}
   return(df)
 }

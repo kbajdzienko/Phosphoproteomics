@@ -1,51 +1,74 @@
 # Two-way ANOVA, for treatment and time variables
 # Between subjects.
-#
+# Default is type III ANOVA for unbalanced data sets (unequal numbers of observations for each level of a factor).
+# It is okay to use type III for balanced data sets as well since the factors are orthogonal, 
+# and types I, II and III all give the same results.
+
+# Alternative is type II ANOVA, which should be used when type III will give no interaction between factors. 
+
 # p.cor - method of p-value correction, can be "holm", "hochberg", "hommel",
 # "bonferroni", "BH", "BY", "fdr", "none"
 
-anova2 <- function (df, p.cor = "fdr", data="annInt") {
+anova2 <- function (df, p.cor = "fdr", data="phospho", type = "I") {
 
-  match.arg(data, c("int", "annInt"))
+  match.arg(data, c("protein", "phospho"))
+  match.arg(type, c("I", "II", "III"))
   
   # Function, conducting two-way ANOVA/ANCOVA on a subset data frame
   # and getting three p-values
-  pv.anova2 <- function(ddf) {
-    aov(intensity ~ treatment*time, data = ddf) %>%
-      summary() %>%
+  pv.anovaIII <- function(ddf) {
+    car::Anova(lm(intensity ~ treatment*time, data = ddf, contrasts = list(treatment=contr.sum, time=contr.sum)),
+               type=3)%>%
       unlist() %>%
+      .[16:18]
+  }
+  pv.anovaII <- function(ddf) {
+    car::Anova(lm(intensity ~ treatment*time, data = ddf),type=2) %>%
+      unlist() %>%
+      .[13:15]
+  }
+  
+  pv.anovaI <- function(ddf) {
+    aov(intensity~treatment*time, data=ddf) %>%
+      summary() %>%
+      unlist()%>%
       .[17:19]
   }
-if(data == "int"){
+  
+if(data == "protein"){
   pv_df <-
     right_join(df$intData, df$sampleData) %>%
-    plyr::ddply("peak_ID", pv.anova2) %>%
+    mutate(time = as.factor(time)) %>%
+    plyr::ddply("peak_ID", ifelse(type=="III", pv.anovaIII, ifelse(type=="II", pv.anovaII, ifelse(type=="I", pv.anovaI, pv.anovaIII)))) %>%
     tbl_df() %>%
-    setNames(c("peak_ID", "pv_treatment", "pv_time", "pv_inter")) %>%
+    setNames(c("peak_ID", "pv_treatment", "pv_time", "pv_interaction")) %>%
     mutate_at(vars(-peak_ID), p.adjust, method = p.cor)
 }
-else if (data == "annInt"){
+  
+else if (data == "phospho"){
   pv_df <-
     right_join(df$annIntData, df$sampleData) %>%
-    plyr::ddply("ann_ID", pv.anova2) %>%
+    mutate(time = as.factor(time)) %>%
+    plyr::ddply("ann_ID", ifelse(type=="III", pv.anovaIII, ifelse(type=="II", pv.anovaII, ifelse(type=="I", pv.anovaI, pv.anovaIII)))) %>%
     tbl_df() %>%
-    setNames(c("ann_ID", "pv_treatment", "pv_time", "pv_inter")) %>%
+    setNames(c("ann_ID", "pv_treatment", "pv_time", "pv_interaction")) %>%
     mutate_at(vars(-ann_ID), p.adjust, method = p.cor)
-  
 }
   return(pv_df)
 }
 
 # Function plotting two-way ANOVA venn diagram of significantly changing features
 
-plot_venn_anova2 <- function(df, threshold = 0.05, p.cor = "fdr", data="annInt") {
-  match.arg(data, c("int", "annInt"))
-  pv_df <- anova2(df, p.cor)
-  if (data=="int"){
-  venn_list <- lapply(pv_df[-1], function(x) pv_df$peak_ID[x <= 0.05])
+plot_venn_anova2 <- function(df, threshold = 0.05, p.cor = "fdr", data="phospho", type="I") {
+  match.arg(data, c("protein", "phospho"))
+  
+  if (data=="protein"){
+    pv_df <- anova2(df, p.cor, data="int", type=type)
+  venn_list <- lapply(pv_df[-1], function(x) pv_df$peak_ID[x <= threshold])
   }
-  else if (data=="annInt"){
-    venn_list <- lapply(pv_df[-1], function(x) pv_df$ann_ID[x <= 0.05])}
+  else if (data=="phospho"){
+    pv_df <- anova2(df, p.cor, type=type)
+    venn_list <- lapply(pv_df[-1], function(x) pv_df$ann_ID[x <= threshold])}
   
   venn <- VennDiagram::venn.diagram(venn_list,
                             category.names = c("Treatment", "Time", "Interaction"),
